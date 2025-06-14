@@ -124,7 +124,9 @@ const RightTabsPanel: React.FC<{
               <div className="flex flex-row items-center gap-4">
                 <div>
                   <WebcamPreview />
-                  <div className="text-gray-400 text-xs mt-1 text-center">Live Webcam (You)</div>
+                  <div className="text-gray-400 text-xs mt-1 text-center">
+                    Live Webcam (You)
+                  </div>
                 </div>
                 <VoiceBar active={activeVoice} />
               </div>
@@ -136,3 +138,4 @@ const RightTabsPanel: React.FC<{
   );
 };
 export default RightTabsPanel;
+
