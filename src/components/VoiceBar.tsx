@@ -1,20 +1,19 @@
 
 import React, { useState, useEffect, useRef } from "react";
 
+// Animated audio input volume bar
 const VoiceBar: React.FC<{ active: boolean }> = ({ active }) => {
   const [volume, setVolume] = useState(0);
-  const [micError, setMicError] = useState<string | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
+  const audioCtxRef = useRef<null | AudioContext>(null);
+  const analyserRef = useRef<null | AnalyserNode>(null);
   const animationFrame = useRef<number>();
-  const micStreamRef = useRef<MediaStream | null>(null);
+  const micStreamRef = useRef<null | MediaStream>(null);
 
   useEffect(() => {
     if (!active) {
       setVolume(0);
-      setMicError(null);
       // Clean up
-      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+      if (audioCtxRef.current) {
         audioCtxRef.current.close();
         audioCtxRef.current = null;
       }
@@ -29,68 +28,36 @@ const VoiceBar: React.FC<{ active: boolean }> = ({ active }) => {
     }
 
     let mounted = true;
-    
-    const setupAudio = async () => {
+    // Setup audio input + analyser
+    (async () => {
       try {
-        setMicError(null);
-        console.log('Requesting microphone access...');
-        
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          } 
-        });
-        
-        if (!mounted) {
-          stream.getTracks().forEach((t) => t.stop());
-          return;
-        }
-        
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         micStreamRef.current = stream;
-        console.log('Microphone access granted');
-        
         const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        await ctx.resume(); // Ensure context is running
         audioCtxRef.current = ctx;
-        
         const source = ctx.createMediaStreamSource(stream);
         const analyser = ctx.createAnalyser();
-        analyser.fftSize = 512;
-        analyser.smoothingTimeConstant = 0.8;
         source.connect(analyser);
+        analyser.fftSize = 256;
         analyserRef.current = analyser;
-        
         const buffer = new Uint8Array(analyser.frequencyBinCount);
 
-        const animate = () => {
-          if (!mounted || !analyser) return;
-          
-          analyser.getByteFrequencyData(buffer);
-          
-          // Calculate average volume
-          const sum = buffer.reduce((a, b) => a + b, 0);
-          const average = sum / buffer.length;
-          const normalizedVolume = Math.min(average / 128, 1);
-          
-          setVolume(normalizedVolume);
+        function animate() {
+          analyser.getByteTimeDomainData(buffer);
+          let rms = Math.sqrt(buffer.reduce((sum, v) => sum + (v - 128) ** 2, 0) / buffer.length);
+          rms = Math.min(Math.max(rms / 40, 0), 1);
+          if (mounted) setVolume(rms);
           animationFrame.current = requestAnimationFrame(animate);
-        };
-        
+        }
         animate();
-      } catch (error) {
-        console.error('Microphone access failed:', error);
-        setMicError('Microphone access denied or unavailable');
+      } catch {
         setVolume(0);
       }
-    };
-
-    setupAudio();
+    })();
 
     return () => {
       mounted = false;
-      if (audioCtxRef.current && audioCtxRef.current.state !== 'closed') {
+      if (audioCtxRef.current) {
         audioCtxRef.current.close();
         audioCtxRef.current = null;
       }
@@ -104,29 +71,20 @@ const VoiceBar: React.FC<{ active: boolean }> = ({ active }) => {
     };
   }, [active]);
 
+  // Bar
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="bg-gray-800 w-40 h-3 rounded-full overflow-hidden border border-gray-700">
+    <div className="w-full mt-1 flex flex-col items-center">
+      <div className="bg-gray-800 w-48 h-4 rounded-full overflow-hidden border border-gray-700">
         <div
-          className="h-full transition-all duration-150 ease-out"
+          className="h-full transition-all duration-100 ease-in"
           style={{
-            width: `${Math.max(volume * 100, 2)}%`,
-            background: active 
-              ? "linear-gradient(90deg, #ff9500 0%, #fbbf24 100%)" 
-              : "linear-gradient(90deg, #6b7280 0%, #9ca3af 100%)",
+            width: `${(volume * 100).toFixed(0)}%`,
+            background: "linear-gradient(90deg, orange 0%, yellow 100%)",
           }}
         />
       </div>
-      <span className="text-xs mt-1 text-orange-300 tracking-wider">
-        {micError ? "Mic Error" : active ? "Listening..." : "Mic Off"}
-      </span>
-      {micError && (
-        <span className="text-xs text-red-400 mt-1 text-center max-w-32">
-          {micError}
-        </span>
-      )}
+      <span className="text-xs mt-1 text-orange-300 tracking-widest">Mic Level</span>
     </div>
   );
 };
-
 export default VoiceBar;
