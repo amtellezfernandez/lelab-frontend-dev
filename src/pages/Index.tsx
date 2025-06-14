@@ -1,3 +1,4 @@
+
 import StaticImagePanel from "@/components/StaticImagePanel";
 import CameraGrid from "@/components/CameraGrid";
 import InputPanel from "@/components/InputPanel";
@@ -29,18 +30,18 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex flex-col font-sans">
+    <div className="min-h-screen bg-background flex flex-col font-sans">
       <LandingPermissionModal
         open={showPermissionModal}
         onPermissionResult={handlePermissionResult}
       />
       <div className="flex flex-1 w-full max-w-[1700px] mx-auto my-5 gap-10 px-3">
         {/* LEFT PANEL */}
-        <div className="bg-[#181818] rounded-2xl shadow-xl flex flex-col items-center pt-6 pb-4 px-4 min-w-[340px] max-w-[370px] flex-shrink-0 border-2 border-orange-900 h-[880px]">
+        <div className="bg-card rounded-3xl shadow-xl flex flex-col items-center pt-6 pb-4 px-4 min-w-[340px] max-w-[370px] flex-shrink-0 border border-border h-[880px]">
           <StaticImagePanel />
           {/* Camera Thumbnails */}
           <div className="w-full mt-6 mb-2">
-            <h3 className="text-lg font-bold text-orange-300 mb-1 text-center">Live Views</h3>
+            <h3 className="text-lg font-bold text-primary mb-1 text-center">Live Views</h3>
             <CameraGrid />
           </div>
         </div>
@@ -58,7 +59,7 @@ const Index = () => {
           />
         </div>
         {/* RIGHT: TABS */}
-        <div className="bg-[#181818] rounded-2xl shadow-xl px-6 pt-5 pb-8 min-w-[430px] max-w-[590px] h-[880px] flex flex-col border-2 border-orange-900">
+        <div className="bg-card rounded-3xl shadow-xl px-6 pt-5 pb-8 min-w-[430px] max-w-[590px] h-[880px] flex flex-col border border-border">
           <RightTabsPanel
             permissionsGranted={permissionsGranted}
             activeVoice={voiceActive}

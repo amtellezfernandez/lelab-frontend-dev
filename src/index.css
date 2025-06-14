@@ -5,42 +5,67 @@
 
 @layer base {
   :root {
-    --background: 0 0% 2%;
-    --foreground: 48 98% 95%;
+    --background: 224 71% 4%; /* Dark Navy */
+    --foreground: 210 40% 98%; /* Off-white */
 
-    --accent-orange: 33 100% 50%;
-    --accent-yellow: 48 98% 60%;
-    --highlight-blue: 221 97% 58%;
-    --destructive: 358 89% 56%;
+    --card: 222 84% 5%; /* Slightly lighter navy */
+    --card-foreground: 210 40% 98%;
 
-    --primary: 33 100% 50%; /* orange by default */
-    --primary-foreground: 48 98% 95%;
+    --popover: 222 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
-    --card: 0 0% 8%;
-    --card-foreground: 48 98% 95%;
-    --border: 0 0% 20%;
-    --input: 0 0% 22%;
+    --primary: 217 91% 60%; /* Bright Blue */
+    --primary-foreground: 210 40% 98%;
 
-    --sidebar-background: 0 0% 4%;
-    --sidebar-foreground: 48 98% 95%;
-    --sidebar-accent: 48 98% 60%;
+    --secondary: 217 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 32.6% 17.5%;
+    --input: 217 32.6% 17.5%;
+
+    --ring: 217 91% 60%;
+
+    --radius: 1rem;
   }
 
   body {
-    @apply bg-black text-white;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif; /* A cleaner font */
+  }
+
+  @supports (font-variation-settings: normal) {
+    body {
+      font-family: 'Inter var', sans-serif;
+    }
   }
 }
 
-/* High contrast accents for buttons/primary UI */
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+
+/* Custom button classes from project */
 .btn-accent {
-  @apply text-black bg-[hsl(var(--accent-orange))] hover:bg-[hsl(33,100%,56%)];
+  @apply text-primary-foreground bg-primary hover:bg-primary/90;
 }
 .btn-destroy {
-  @apply text-white bg-[hsl(var(--destructive))] hover:bg-red-800;
+  @apply text-destructive-foreground bg-destructive hover:bg-destructive/90;
 }
 .btn-inactive {
-  @apply text-gray-200 bg-gray-700 hover:bg-gray-600;
+  @apply text-muted-foreground bg-input hover:bg-accent/90;
 }
 .btn-active {
-  @apply text-white bg-[hsl(var(--highlight-blue))] hover:bg-blue-600;
+  @apply text-white bg-sky-500 hover:bg-sky-600; /* Use a distinct color for voice active */
 }

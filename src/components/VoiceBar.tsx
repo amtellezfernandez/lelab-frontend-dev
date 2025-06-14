@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 
 // Animated audio input volume bar
@@ -74,16 +73,15 @@ const VoiceBar: React.FC<{ active: boolean }> = ({ active }) => {
   // Bar
   return (
     <div className="w-full mt-1 flex flex-col items-center">
-      <div className="bg-gray-800 w-48 h-4 rounded-full overflow-hidden border border-gray-700">
+      <div className="bg-input w-48 h-4 rounded-full overflow-hidden border border-border">
         <div
-          className="h-full transition-all duration-100 ease-in"
+          className="h-full transition-all duration-100 ease-in bg-primary"
           style={{
             width: `${(volume * 100).toFixed(0)}%`,
-            background: "linear-gradient(90deg, orange 0%, yellow 100%)",
           }}
         />
       </div>
-      <span className="text-xs mt-1 text-orange-300 tracking-widest">Mic Level</span>
+      <span className="text-xs mt-1 text-primary tracking-widest">Mic Level</span>
     </div>
   );
 };
