@@ -1,9 +1,9 @@
-
 import * as React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartLegend, ChartLegendContent, ChartTooltipContent } from "@/components/ui/chart";
 import VoiceBar from "./VoiceBar";
 import WebcamPreview from "./WebcamPreview";
+import { LineChart, Line, XAxis, YAxis } from "recharts";
 
 const sensorChartColors = {
   pressure: "#FFD600",
@@ -82,18 +82,16 @@ const RightTabsPanel: React.FC<{
                 position: { color: sensorChartColors.position, label: "Position" },
                 velocity: { color: sensorChartColors.velocity, label: "Velocity" },
               }}>
-                {({ ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend }) => (
-                  <LineChart data={sensorData}>
-                    <XAxis dataKey="time" stroke="#fff" />
-                    <YAxis stroke="#fff" tickFormatter={tick => tick.toFixed(0)} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Legend content={<ChartLegendContent />} />
-                    <Line type="monotone" dataKey="pressure" stroke={sensorChartColors.pressure} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="torque" stroke={sensorChartColors.torque} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="position" stroke={sensorChartColors.position} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="velocity" stroke={sensorChartColors.velocity} strokeWidth={2} dot={false} />
-                  </LineChart>
-                )}
+                <LineChart data={sensorData}>
+                  <XAxis dataKey="time" stroke="#fff" />
+                  <YAxis stroke="#fff" tickFormatter={tick => tick.toFixed(0)} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="pressure" stroke="var(--color-pressure)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="torque" stroke="var(--color-torque)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="position" stroke="var(--color-position)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="velocity" stroke="var(--color-velocity)" strokeWidth={2} dot={false} />
+                </LineChart>
               </ChartContainer>
             </div>
           </TabsContent>
@@ -105,17 +103,15 @@ const RightTabsPanel: React.FC<{
                 current: { color: motorChartColors.current, label: "Current" },
                 temperature: { color: motorChartColors.temperature, label: "Temperature" },
               }}>
-                {({ ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend }) => (
-                  <LineChart data={motorData}>
-                    <XAxis dataKey="time" stroke="#fff" />
-                    <YAxis stroke="#fff" tickFormatter={tick => tick.toFixed(0)} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Legend content={<ChartLegendContent />} />
-                    <Line type="monotone" dataKey="speed" stroke={motorChartColors.speed} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="current" stroke={motorChartColors.current} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="temperature" stroke={motorChartColors.temperature} strokeWidth={2} dot={false} />
-                  </LineChart>
-                )}
+                <LineChart data={motorData}>
+                  <XAxis dataKey="time" stroke="#fff" />
+                  <YAxis stroke="#fff" tickFormatter={tick => tick.toFixed(0)} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line type="monotone" dataKey="speed" stroke="var(--color-speed)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="current" stroke="var(--color-current)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="temperature" stroke="var(--color-temperature)" strokeWidth={2} dot={false} />
+                </LineChart>
               </ChartContainer>
             </div>
           </TabsContent>
@@ -138,4 +134,3 @@ const RightTabsPanel: React.FC<{
   );
 };
 export default RightTabsPanel;
-

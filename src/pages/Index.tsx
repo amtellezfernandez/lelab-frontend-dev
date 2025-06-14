@@ -1,4 +1,3 @@
-
 import StaticImagePanel from "@/components/StaticImagePanel";
 import CameraGrid from "@/components/CameraGrid";
 import InputPanel from "@/components/InputPanel";
@@ -42,7 +41,7 @@ const Index = () => {
           {/* Camera Thumbnails */}
           <div className="w-full mt-6 mb-2">
             <h3 className="text-lg font-bold text-orange-300 mb-1 text-center">Live Views</h3>
-            <CameraGrid showWebcam={permissionsGranted} />
+            <CameraGrid />
           </div>
         </div>
         {/* CENTER: CONTROLS */}
