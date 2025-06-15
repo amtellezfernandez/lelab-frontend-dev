@@ -40,14 +40,17 @@ const ActionList: React.FC<ActionListProps> = ({ actions, robotModel }) => {
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-lg">{action.title}</h3>
                     {action.isWorkInProgress && (
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Work in progress</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      <div className="flex items-center gap-1">
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <AlertTriangle className="w-4 h-4 text-yellow-500" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Work in progress</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <span className="text-yellow-500 text-xs font-medium">Work in Progress</span>
+                      </div>
                     )}
                   </div>
                   <p className="text-gray-400 text-sm">
