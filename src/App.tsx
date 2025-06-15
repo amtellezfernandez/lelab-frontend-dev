@@ -8,16 +8,18 @@ import Calibration from "./pages/Calibration";
 import EditDataset from "./pages/EditDataset";
 import ReplayDataset from "./pages/ReplayDataset";
 import NotFound from "./pages/NotFound";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { DragAndDropProvider } from "./contexts/DragAndDropContext";
 import { UrdfProvider } from "./contexts/UrdfContext";
-import { QueryClient } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PhoneCamera from "./pages/PhoneCamera";
 import { Toaster } from "./components/ui/toaster";
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <UrdfProvider>
           <DragAndDropProvider>
@@ -38,7 +40,7 @@ function App() {
           </DragAndDropProvider>
         </UrdfProvider>
       </ThemeProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 
