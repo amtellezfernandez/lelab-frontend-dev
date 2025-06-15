@@ -33,7 +33,7 @@ const VisualizerPanel: React.FC<VisualizerPanelProps> = ({
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <Logo />
+          <Logo iconOnly={true} />
           <div className="w-px h-6 bg-gray-700" />
           <h2 className="text-xl font-medium text-gray-200">Teleoperation</h2>
         </div>
