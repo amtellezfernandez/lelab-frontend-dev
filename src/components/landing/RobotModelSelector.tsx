@@ -14,7 +14,7 @@ const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
       <h2 className="text-2xl font-semibold text-center text-white">
         Select Robot Model
       </h2>
-      <RadioGroup value={robotModel} onValueChange={onValueChange} className="space-y-2">
+      <RadioGroup value={robotModel} onValueChange={onValueChange} className="flex items-start justify-center space-x-4">
         <div>
           <RadioGroupItem value="SO100" id="so100" className="sr-only" />
           <Label htmlFor="so100" className="flex items-center space-x-4 p-4 rounded-lg bg-gray-800 border border-gray-700 cursor-pointer transition-all">
