@@ -19,7 +19,7 @@ const VisualizerPanel: React.FC<VisualizerPanelProps> = ({
   return (
     <div
       className={cn(
-        "w-full lg:w-1/2 p-2 sm:p-4 space-y-4 flex flex-col",
+        "w-full p-2 sm:p-4 space-y-4 lg:space-y-0 lg:space-x-4 flex flex-col lg:flex-row",
         className
       )}
     >
@@ -38,18 +38,12 @@ const VisualizerPanel: React.FC<VisualizerPanelProps> = ({
           <h2 className="text-xl font-medium text-gray-200">Teleoperation</h2>
         </div>
         <div className="flex-1 bg-black rounded border border-gray-800 min-h-[50vh] lg:min-h-0">
-          {/* <Canvas camera={{ position: [5, 3, 5], fov: 50 }}>
-            <ambientLight intensity={0.4} />
-            <directionalLight position={[10, 10, 5]} intensity={1} />
-            <RobotArm />
-            <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
-          </Canvas> */}
           <UrdfProcessorInitializer />
           <UrdfViewer />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-64 flex-shrink-0">
         {[1, 2, 3, 4].map((cam) => (
           <div
             key={cam}
