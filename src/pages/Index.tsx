@@ -1,71 +1,145 @@
 
-import StaticImagePanel from "@/components/StaticImagePanel";
-import CameraGrid from "@/components/CameraGrid";
-import InputPanel from "@/components/InputPanel";
-import RightTabsPanel from "@/components/RightTabsPanel";
-import LandingPermissionModal from "@/components/LandingPermissionModal";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { generateSensorData, generateMotorData } from '@/lib/mockData';
+import VisualizerPanel from '@/components/control/VisualizerPanel';
+import MetricsPanel from '@/components/control/MetricsPanel';
+import CommandBar from '@/components/control/CommandBar';
 
-// Main robotic control interface
 const Index = () => {
-  const [showPermissionModal, setShowPermissionModal] = useState(true);
-  const [permissionsGranted, setPermissionsGranted] = useState(false);
-  const [voiceActive, setVoiceActive] = useState(true);
+  const [command, setCommand] = useState('');
+  const [activeTab, setActiveTab] = useState<'SENSORS' | 'MOTORS'>('SENSORS');
+  const [isVoiceActive, setIsVoiceActive] = useState(true);
+  const [showCamera, setShowCamera] = useState(false);
+  const [hasPermissions, setHasPermissions] = useState(false);
+  const [micLevel, setMicLevel] = useState(0);
+  const [sensorData, setSensorData] = useState<any[]>([]);
+  const [motorData, setMotorData] = useState<any[]>([]);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Simulate a session-ending event
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    let audioContext: AudioContext | null = null;
+    const getPermissions = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: true, 
+          audio: true 
+        });
+        
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        
+        setHasPermissions(true);
+        
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        if (AudioContextClass) {
+          audioContext = new AudioContextClass();
+          const analyser = audioContext.createAnalyser();
+          const source = audioContext.createMediaStreamSource(stream);
+          source.connect(analyser);
+          
+          let animationFrameId: number;
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          const updateMicLevel = () => {
+            if (audioContext?.state === 'closed') return;
+            analyser.getByteFrequencyData(dataArray);
+            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+            setMicLevel(average);
+            animationFrameId = requestAnimationFrame(updateMicLevel);
+          };
+          updateMicLevel();
+
+          return () => {
+            cancelAnimationFrame(animationFrameId);
+            audioContext?.close();
+          };
+        }
+      } catch (error) {
+        console.error("Permission to access media devices was denied.", error);
+      }
+    };
+
+    let cleanup: (() => void) | undefined;
+    getPermissions().then(returnedCleanup => {
+      cleanup = returnedCleanup;
+    });
+
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+      cleanup?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSensorData(prev => [...prev, generateSensorData()].slice(-50));
+      setMotorData(prev => [...prev, generateMotorData()].slice(-50));
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleSendCommand = () => {
+    if (command.trim()) {
+      toast({
+        title: "Command Sent",
+        description: `Robot command: "${command}"`,
+      });
+      setCommand('');
+    }
+  };
+
+  const handleGoBack = () => {
+    navigate('/');
+  };
+
   const handleEndSession = () => {
-    setVoiceActive(false);
-    // Could add more handling logic
-  };
-
-  // Modal permission handler
-  const handlePermissionResult = (result: boolean) => {
-    setPermissionsGranted(result);
-    setShowPermissionModal(false);
-  };
-
-  // Handle command send
-  const handleSendCommand = (text: string) => {
-    alert(`Command sent: ${text}`);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    toast({
+      title: "Session Ended",
+      description: "Robot control session terminated safely.",
+      variant: "destructive",
+    });
+    navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col font-sans">
-      <LandingPermissionModal
-        open={showPermissionModal}
-        onPermissionResult={handlePermissionResult}
-      />
-      <div className="flex flex-1 w-full max-w-[1700px] mx-auto my-5 gap-10 px-3">
-        {/* LEFT PANEL */}
-        <div className="bg-card rounded-3xl shadow-xl flex flex-col items-center pt-6 pb-4 px-4 min-w-[340px] max-w-[370px] flex-shrink-0 border border-border h-[880px]">
-          <StaticImagePanel />
-          {/* Camera Thumbnails */}
-          <div className="w-full mt-6 mb-2">
-            <h3 className="text-lg font-bold text-primary mb-1 text-center">Live Views</h3>
-            <CameraGrid />
-          </div>
-        </div>
-        {/* CENTER: CONTROLS */}
-        <div className="flex flex-col items-center justify-end flex-1 min-w-[380px] max-w-[520px] gap-6">
-          <div className="mb-8 w-full">
-            {/* Empty space above for symmetry */}
-          </div>
-          <InputPanel
-            onSend={handleSendCommand}
-            onVoice={() => setVoiceActive((v) => !v)}
-            onShowCamera={() => alert("Show Camera pressed (TBD)")}
-            onEndSession={handleEndSession}
-            voiceActive={voiceActive}
-          />
-        </div>
-        {/* RIGHT: TABS */}
-        <div className="bg-card rounded-3xl shadow-xl px-6 pt-5 pb-8 min-w-[430px] max-w-[590px] h-[880px] flex flex-col border border-border">
-          <RightTabsPanel
-            permissionsGranted={permissionsGranted}
-            activeVoice={voiceActive}
-          />
-        </div>
+    <div className="min-h-screen bg-black text-white flex flex-col">
+      <div className="flex-1 flex flex-col lg:flex-row">
+        <VisualizerPanel onGoBack={handleGoBack} />
+        <MetricsPanel
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          sensorData={sensorData}
+          motorData={motorData}
+          hasPermissions={hasPermissions}
+          streamRef={streamRef}
+          isVoiceActive={isVoiceActive}
+          micLevel={micLevel}
+        />
       </div>
+
+      <CommandBar
+        command={command}
+        setCommand={setCommand}
+        handleSendCommand={handleSendCommand}
+        isVoiceActive={isVoiceActive}
+        setIsVoiceActive={setIsVoiceActive}
+        showCamera={showCamera}
+        setShowCamera={setShowCamera}
+        handleEndSession={handleEndSession}
+      />
     </div>
   );
 };
