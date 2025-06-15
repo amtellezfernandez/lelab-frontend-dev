@@ -30,6 +30,7 @@ import {
   CheckCircle,
   Loader2,
 } from "lucide-react";
+import Logo from "@/components/Logo";
 
 interface TrainingConfig {
   // Dataset configuration - exact matches from CLI
@@ -309,29 +310,31 @@ const Training = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-4">
+    <div className="min-h-screen bg-slate-900 text-white p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => navigate("/")}
-              className="text-gray-400 hover:text-white"
+              className="text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
+              <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-4xl font-bold text-white">
+            <Logo />
+            <h1 className="text-3xl font-bold text-white">
               Training Dashboard
             </h1>
           </div>
 
           <div className="flex items-center gap-3">
             <div
-              className={`w-2 h-2 rounded-full ${
-                trainingStatus.training_active ? "bg-green-400" : "bg-gray-400"
+              className={`w-3 h-3 rounded-full ${
+                trainingStatus.training_active
+                  ? "bg-green-400 animate-pulse"
+                  : "bg-slate-500"
               }`}
             ></div>
             <span className={`font-semibold ${getStatusColor()}`}>
@@ -341,19 +344,27 @@ const Training = () => {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-2 mb-6 border-b border-slate-700">
           <Button
-            variant={activeTab === "config" ? "default" : "ghost"}
+            variant="ghost"
             onClick={() => setActiveTab("config")}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 rounded-none px-4 py-3 text-sm font-semibold transition-colors ${
+              activeTab === "config"
+                ? "text-white border-b-2 border-white"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
+            }`}
           >
             <Settings className="w-4 h-4" />
             Configuration
           </Button>
           <Button
-            variant={activeTab === "monitoring" ? "default" : "ghost"}
+            variant="ghost"
             onClick={() => setActiveTab("monitoring")}
-            className="flex items-center gap-2"
+            className={`flex items-center gap-2 rounded-none px-4 py-3 text-sm font-semibold transition-colors ${
+              activeTab === "monitoring"
+                ? "text-white border-b-2 border-white"
+                : "text-slate-400 hover:bg-slate-800 hover:text-white"
+            }`}
           >
             <Activity className="w-4 h-4" />
             Monitoring
@@ -364,16 +375,18 @@ const Training = () => {
         {activeTab === "config" && (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             {/* Dataset Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Database className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <Database className="w-5 h-5 text-sky-400" />
+                  </div>
                   Dataset Configuration
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="dataset_repo_id" className="text-gray-300">
+                  <Label htmlFor="dataset_repo_id" className="text-slate-300">
                     Dataset Repository ID *
                   </Label>
                   <Input
@@ -383,15 +396,15 @@ const Training = () => {
                       updateConfig("dataset_repo_id", e.target.value)
                     }
                     placeholder="e.g., your-username/your-dataset"
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     HuggingFace Hub dataset repository ID
                   </p>
                 </div>
 
                 <div>
-                  <Label htmlFor="dataset_revision" className="text-gray-300">
+                  <Label htmlFor="dataset_revision" className="text-slate-300">
                     Dataset Revision (optional)
                   </Label>
                   <Input
@@ -404,15 +417,15 @@ const Training = () => {
                       )
                     }
                     placeholder="main"
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     Git revision (branch, tag, or commit hash)
                   </p>
                 </div>
 
                 <div>
-                  <Label htmlFor="dataset_root" className="text-gray-300">
+                  <Label htmlFor="dataset_root" className="text-slate-300">
                     Dataset Root Directory (optional)
                   </Label>
                   <Input
@@ -422,23 +435,25 @@ const Training = () => {
                       updateConfig("dataset_root", e.target.value || undefined)
                     }
                     placeholder="./data"
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Policy Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Cpu className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <Cpu className="w-5 h-5 text-sky-400" />
+                  </div>
                   Policy Configuration
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="policy_type" className="text-gray-300">
+                  <Label htmlFor="policy_type" className="text-slate-300">
                     Policy Type
                   </Label>
                   <Select
@@ -447,10 +462,10 @@ const Training = () => {
                       updateConfig("policy_type", value)
                     }
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-slate-900 border-slate-600 text-white rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-slate-800 border-slate-600">
                       <SelectItem value="act">
                         ACT (Action Chunking Transformer)
                       </SelectItem>
@@ -471,7 +486,7 @@ const Training = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="policy_device" className="text-gray-300">
+                  <Label htmlFor="policy_device" className="text-slate-300">
                     Device
                   </Label>
                   <Select
@@ -480,10 +495,10 @@ const Training = () => {
                       updateConfig("policy_device", value)
                     }
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-slate-900 border-slate-600 text-white rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-slate-800 border-slate-600">
                       <SelectItem value="cuda">CUDA (GPU)</SelectItem>
                       <SelectItem value="cpu">CPU</SelectItem>
                       <SelectItem value="mps">MPS (Apple Silicon)</SelectItem>
@@ -491,7 +506,7 @@ const Training = () => {
                   </Select>
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="policy_use_amp"
                     checked={trainingConfig.policy_use_amp}
@@ -499,7 +514,7 @@ const Training = () => {
                       updateConfig("policy_use_amp", checked)
                     }
                   />
-                  <Label htmlFor="policy_use_amp" className="text-gray-300">
+                  <Label htmlFor="policy_use_amp" className="text-slate-300">
                     Use Automatic Mixed Precision (AMP)
                   </Label>
                 </div>
@@ -507,17 +522,19 @@ const Training = () => {
             </Card>
 
             {/* Training Parameters */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <TrendingUp className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <TrendingUp className="w-5 h-5 text-sky-400" />
+                  </div>
                   Training Parameters
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="steps" className="text-gray-300">
+                    <Label htmlFor="steps" className="text-slate-300">
                       Training Steps
                     </Label>
                     <Input
@@ -527,12 +544,12 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("steps", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="batch_size" className="text-gray-300">
+                    <Label htmlFor="batch_size" className="text-slate-300">
                       Batch Size
                     </Label>
                     <Input
@@ -542,14 +559,14 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("batch_size", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="seed" className="text-gray-300">
+                    <Label htmlFor="seed" className="text-slate-300">
                       Random Seed
                     </Label>
                     <Input
@@ -562,12 +579,12 @@ const Training = () => {
                           e.target.value ? parseInt(e.target.value) : undefined
                         )
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="num_workers" className="text-gray-300">
+                    <Label htmlFor="num_workers" className="text-slate-300">
                       Number of Workers
                     </Label>
                     <Input
@@ -577,7 +594,7 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("num_workers", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
                 </div>
@@ -585,16 +602,18 @@ const Training = () => {
             </Card>
 
             {/* Optimizer Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Settings className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <Settings className="w-5 h-5 text-sky-400" />
+                  </div>
                   Optimizer Configuration
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="optimizer_type" className="text-gray-300">
+                  <Label htmlFor="optimizer_type" className="text-slate-300">
                     Optimizer Type
                   </Label>
                   <Select
@@ -603,10 +622,10 @@ const Training = () => {
                       updateConfig("optimizer_type", value)
                     }
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-slate-900 border-slate-600 text-white rounded-lg">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-slate-800 border-slate-600">
                       <SelectItem value="adam">Adam</SelectItem>
                       <SelectItem value="adamw">AdamW</SelectItem>
                       <SelectItem value="sgd">SGD</SelectItem>
@@ -617,7 +636,7 @@ const Training = () => {
 
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="optimizer_lr" className="text-gray-300">
+                    <Label htmlFor="optimizer_lr" className="text-slate-300">
                       Learning Rate
                     </Label>
                     <Input
@@ -634,14 +653,14 @@ const Training = () => {
                         )
                       }
                       placeholder="Use policy default"
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
                     <Label
                       htmlFor="optimizer_weight_decay"
-                      className="text-gray-300"
+                      className="text-slate-300"
                     >
                       Weight Decay
                     </Label>
@@ -659,14 +678,14 @@ const Training = () => {
                         )
                       }
                       placeholder="Use policy default"
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
                     <Label
                       htmlFor="optimizer_grad_clip_norm"
-                      className="text-gray-300"
+                      className="text-slate-300"
                     >
                       Gradient Clipping
                     </Label>
@@ -683,7 +702,7 @@ const Training = () => {
                         )
                       }
                       placeholder="Use policy default"
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
                 </div>
@@ -691,17 +710,19 @@ const Training = () => {
             </Card>
 
             {/* Logging Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <FileText className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <FileText className="w-5 h-5 text-sky-400" />
+                  </div>
                   Logging & Checkpointing
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="log_freq" className="text-gray-300">
+                    <Label htmlFor="log_freq" className="text-slate-300">
                       Log Frequency
                     </Label>
                     <Input
@@ -711,12 +732,12 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("log_freq", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="save_freq" className="text-gray-300">
+                    <Label htmlFor="save_freq" className="text-slate-300">
                       Save Frequency
                     </Label>
                     <Input
@@ -726,12 +747,12 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("save_freq", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="eval_freq" className="text-gray-300">
+                    <Label htmlFor="eval_freq" className="text-slate-300">
                       Eval Frequency
                     </Label>
                     <Input
@@ -741,25 +762,25 @@ const Training = () => {
                       onChange={(e) =>
                         updateConfig("eval_freq", parseInt(e.target.value))
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="output_dir" className="text-gray-300">
+                  <Label htmlFor="output_dir" className="text-slate-300">
                     Output Directory
                   </Label>
                   <Input
                     id="output_dir"
                     value={trainingConfig.output_dir}
                     onChange={(e) => updateConfig("output_dir", e.target.value)}
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="job_name" className="text-gray-300">
+                  <Label htmlFor="job_name" className="text-slate-300">
                     Job Name (optional)
                   </Label>
                   <Input
@@ -768,11 +789,11 @@ const Training = () => {
                     onChange={(e) =>
                       updateConfig("job_name", e.target.value || undefined)
                     }
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="save_checkpoint"
                     checked={trainingConfig.save_checkpoint}
@@ -780,7 +801,7 @@ const Training = () => {
                       updateConfig("save_checkpoint", checked)
                     }
                   />
-                  <Label htmlFor="save_checkpoint" className="text-gray-300">
+                  <Label htmlFor="save_checkpoint" className="text-slate-300">
                     Save Checkpoints
                   </Label>
                 </div>
@@ -793,7 +814,7 @@ const Training = () => {
                       updateConfig("resume", checked)
                     }
                   />
-                  <Label htmlFor="resume" className="text-gray-300">
+                  <Label htmlFor="resume" className="text-slate-300">
                     Resume from Checkpoint
                   </Label>
                 </div>
@@ -801,15 +822,17 @@ const Training = () => {
             </Card>
 
             {/* Weights & Biases Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <TrendingUp className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <TrendingUp className="w-5 h-5 text-sky-400" />
+                  </div>
                   Weights & Biases
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="wandb_enable"
                     checked={trainingConfig.wandb_enable}
@@ -817,7 +840,7 @@ const Training = () => {
                       updateConfig("wandb_enable", checked)
                     }
                   />
-                  <Label htmlFor="wandb_enable" className="text-gray-300">
+                  <Label htmlFor="wandb_enable" className="text-slate-300">
                     Enable Weights & Biases Logging
                   </Label>
                 </div>
@@ -825,7 +848,7 @@ const Training = () => {
                 {trainingConfig.wandb_enable && (
                   <>
                     <div>
-                      <Label htmlFor="wandb_project" className="text-gray-300">
+                      <Label htmlFor="wandb_project" className="text-slate-300">
                         W&B Project Name
                       </Label>
                       <Input
@@ -838,12 +861,12 @@ const Training = () => {
                           )
                         }
                         placeholder="my-robotics-project"
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white rounded-lg"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="wandb_entity" className="text-gray-300">
+                      <Label htmlFor="wandb_entity" className="text-slate-300">
                         W&B Entity (optional)
                       </Label>
                       <Input
@@ -856,12 +879,12 @@ const Training = () => {
                           )
                         }
                         placeholder="your-username"
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white rounded-lg"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="wandb_notes" className="text-gray-300">
+                      <Label htmlFor="wandb_notes" className="text-slate-300">
                         W&B Notes (optional)
                       </Label>
                       <Input
@@ -874,12 +897,12 @@ const Training = () => {
                           )
                         }
                         placeholder="Training run notes..."
-                        className="bg-gray-800 border-gray-600 text-white"
+                        className="bg-slate-900 border-slate-600 text-white rounded-lg"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="wandb_mode" className="text-gray-300">
+                      <Label htmlFor="wandb_mode" className="text-slate-300">
                         W&B Mode
                       </Label>
                       <Select
@@ -888,10 +911,10 @@ const Training = () => {
                           updateConfig("wandb_mode", value)
                         }
                       >
-                        <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                        <SelectTrigger className="bg-slate-900 border-slate-600 text-white rounded-lg">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-gray-800 border-gray-600">
+                        <SelectContent className="bg-slate-800 border-slate-600">
                           <SelectItem value="online">Online</SelectItem>
                           <SelectItem value="offline">Offline</SelectItem>
                           <SelectItem value="disabled">Disabled</SelectItem>
@@ -899,7 +922,7 @@ const Training = () => {
                       </Select>
                     </div>
 
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-3 pt-2">
                       <Switch
                         id="wandb_disable_artifact"
                         checked={trainingConfig.wandb_disable_artifact}
@@ -909,7 +932,7 @@ const Training = () => {
                       />
                       <Label
                         htmlFor="wandb_disable_artifact"
-                        className="text-gray-300"
+                        className="text-slate-300"
                       >
                         Disable Artifacts
                       </Label>
@@ -920,16 +943,18 @@ const Training = () => {
             </Card>
 
             {/* Environment & Evaluation Configuration */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Activity className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <Activity className="w-5 h-5 text-sky-400" />
+                  </div>
                   Environment & Evaluation
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="env_type" className="text-gray-300">
+                  <Label htmlFor="env_type" className="text-slate-300">
                     Environment Type (optional)
                   </Label>
                   <Select
@@ -941,10 +966,10 @@ const Training = () => {
                       )
                     }
                   >
-                    <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                    <SelectTrigger className="bg-slate-900 border-slate-600 text-white rounded-lg">
                       <SelectValue placeholder="Select environment type" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border-gray-600">
+                    <SelectContent className="bg-slate-800 border-slate-600">
                       <SelectItem value="none">None</SelectItem>
                       <SelectItem value="aloha">Aloha</SelectItem>
                       <SelectItem value="pusht">PushT</SelectItem>
@@ -958,7 +983,7 @@ const Training = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="env_task" className="text-gray-300">
+                  <Label htmlFor="env_task" className="text-slate-300">
                     Environment Task (optional)
                   </Label>
                   <Input
@@ -968,13 +993,13 @@ const Training = () => {
                       updateConfig("env_task", e.target.value || undefined)
                     }
                     placeholder="e.g., insertion_human"
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="eval_n_episodes" className="text-gray-300">
+                    <Label htmlFor="eval_n_episodes" className="text-slate-300">
                       Eval Episodes
                     </Label>
                     <Input
@@ -987,12 +1012,12 @@ const Training = () => {
                           parseInt(e.target.value)
                         )
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="eval_batch_size" className="text-gray-300">
+                    <Label htmlFor="eval_batch_size" className="text-slate-300">
                       Eval Batch Size
                     </Label>
                     <Input
@@ -1005,12 +1030,12 @@ const Training = () => {
                           parseInt(e.target.value)
                         )
                       }
-                      className="bg-gray-800 border-gray-600 text-white"
+                      className="bg-slate-900 border-slate-600 text-white rounded-lg"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="eval_use_async_envs"
                     checked={trainingConfig.eval_use_async_envs}
@@ -1020,7 +1045,7 @@ const Training = () => {
                   />
                   <Label
                     htmlFor="eval_use_async_envs"
-                    className="text-gray-300"
+                    className="text-slate-300"
                   >
                     Use Asynchronous Environments
                   </Label>
@@ -1029,16 +1054,18 @@ const Training = () => {
             </Card>
 
             {/* Advanced Options */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <Settings className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <Settings className="w-5 h-5 text-sky-400" />
+                  </div>
                   Advanced Options
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="config_path" className="text-gray-300">
+                  <Label htmlFor="config_path" className="text-slate-300">
                     Config Path (optional)
                   </Label>
                   <Input
@@ -1048,11 +1075,11 @@ const Training = () => {
                       updateConfig("config_path", e.target.value || undefined)
                     }
                     placeholder="path/to/config.yaml"
-                    className="bg-gray-800 border-gray-600 text-white"
+                    className="bg-slate-900 border-slate-600 text-white rounded-lg"
                   />
                 </div>
 
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-3 pt-2">
                   <Switch
                     id="use_policy_training_preset"
                     checked={trainingConfig.use_policy_training_preset}
@@ -1062,7 +1089,7 @@ const Training = () => {
                   />
                   <Label
                     htmlFor="use_policy_training_preset"
-                    className="text-gray-300"
+                    className="text-slate-300"
                   >
                     Use Policy Training Preset
                   </Label>
@@ -1077,120 +1104,105 @@ const Training = () => {
           <div className="space-y-6">
             {/* Training Progress */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">
-                    Training Progress
-                  </h3>
-                  <div className="text-3xl font-bold text-blue-400 mb-2">
-                    {trainingStatus.current_step} / {trainingStatus.total_steps}
+              <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/20 text-blue-400">
+                      <TrendingUp className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm text-slate-400 mb-1">Progress</h3>
+                      <div className="text-2xl font-bold text-white">
+                        {trainingStatus.current_step} /{" "}
+                        {trainingStatus.total_steps}
+                      </div>
+                    </div>
                   </div>
-                  <Progress value={getProgressPercentage()} className="mb-2" />
-                  <div className="text-sm text-gray-400">
-                    {getProgressPercentage().toFixed(1)}% Complete
+                  <Progress value={getProgressPercentage()} className="mt-4" />
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/20 text-green-400">
+                      <CheckCircle className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm text-slate-400 mb-1">
+                        Current Loss
+                      </h3>
+                      <div className="text-2xl font-bold text-white">
+                        {trainingStatus.current_loss?.toFixed(4) || "N/A"}
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">Current Loss</h3>
-                  <div className="text-3xl font-bold text-green-400 mb-2">
-                    {trainingStatus.current_loss?.toFixed(4) || "N/A"}
+              <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500/20 text-orange-400">
+                      <Activity className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm text-slate-400 mb-1">
+                        Learning Rate
+                      </h3>
+                      <div className="text-2xl font-bold text-white">
+                        {trainingStatus.current_lr?.toExponential(2) || "N/A"}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-400">Training Loss</div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">Learning Rate</h3>
-                  <div className="text-3xl font-bold text-orange-400 mb-2">
-                    {trainingStatus.current_lr?.toExponential(2) || "N/A"}
+              <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500/20 text-purple-400">
+                      <Clock className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm text-slate-400 mb-1">ETA</h3>
+                      <div className="text-2xl font-bold text-white">
+                        {trainingStatus.eta_seconds
+                          ? formatTime(trainingStatus.eta_seconds)
+                          : "N/A"}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-gray-400">Current LR</div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">ETA</h3>
-                  <div className="text-3xl font-bold text-purple-400 mb-2">
-                    {trainingStatus.eta_seconds
-                      ? formatTime(trainingStatus.eta_seconds)
-                      : "N/A"}
-                  </div>
-                  <div className="text-sm text-gray-400">Estimated Time</div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">Gradient Norm</h3>
-                  <div className="text-3xl font-bold text-cyan-400 mb-2">
-                    {trainingStatus.grad_norm?.toFixed(3) || "N/A"}
-                  </div>
-                  <div className="text-sm text-gray-400">Gradient Clipping</div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">
-                    Training Status
-                  </h3>
-                  <div className="text-2xl font-bold text-yellow-400 mb-2">
-                    {trainingStatus.training_active ? "Active" : "Stopped"}
-                  </div>
-                  <div className="text-sm text-gray-400">Current State</div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">Dataset</h3>
-                  <div className="text-lg font-bold text-pink-400 mb-2 truncate">
-                    {trainingConfig.dataset_repo_id || "Not Set"}
-                  </div>
-                  <div className="text-sm text-gray-400">Repository ID</div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-900 border-gray-700">
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-sm text-gray-400 mb-2">Policy</h3>
-                  <div className="text-lg font-bold text-indigo-400 mb-2 uppercase">
-                    {trainingConfig.policy_type}
-                  </div>
-                  <div className="text-sm text-gray-400">Model Type</div>
                 </CardContent>
               </Card>
             </div>
 
             {/* Training Logs */}
-            <Card className="bg-gray-900 border-gray-700">
+            <Card className="bg-slate-800/50 border-slate-700 rounded-xl">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-white">
-                  <FileText className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-3 text-white">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-700">
+                    <FileText className="w-5 h-5 text-sky-400" />
+                  </div>
                   Training Logs
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
                   ref={logContainerRef}
-                  className="bg-gray-950 rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm"
+                  className="bg-slate-900 rounded-lg p-4 h-96 overflow-y-auto font-mono text-sm border border-slate-700"
                 >
                   {logs.length === 0 ? (
-                    <div className="text-gray-500 text-center py-8">
+                    <div className="text-slate-500 text-center py-8">
                       No training logs yet. Start training to see output.
                     </div>
                   ) : (
                     logs.map((log, index) => (
-                      <div key={index} className="mb-1">
-                        <span className="text-gray-500">
+                      <div key={index} className="flex items-start mb-1">
+                        <span className="text-slate-500 mr-4">
                           {new Date(log.timestamp * 1000).toLocaleTimeString()}
                         </span>
-                        <span className="ml-2 text-gray-300">
+                        <span className="flex-1 text-slate-300 break-words whitespace-pre-wrap">
                           {log.message}
                         </span>
                       </div>
@@ -1211,7 +1223,7 @@ const Training = () => {
                 isStartingTraining || !trainingConfig.dataset_repo_id.trim()
               }
               size="lg"
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 text-lg shadow-lg"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-3 text-base rounded-full shadow-lg transition-all hover:scale-105"
             >
               {isStartingTraining ? (
                 <>
@@ -1230,7 +1242,7 @@ const Training = () => {
               onClick={handleStopTraining}
               disabled={!trainingStatus.available_controls.stop_training}
               size="lg"
-              className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-4 text-lg shadow-lg"
+              className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-3 text-base rounded-full shadow-lg transition-all hover:scale-105"
             >
               <Square className="w-5 h-5 mr-2" />
               Stop Training
