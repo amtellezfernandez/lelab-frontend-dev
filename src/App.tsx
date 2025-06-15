@@ -48,7 +48,6 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <Toaster />
-                  <Sonner />
                 </BrowserRouter>
               </DragAndDropProvider>
             </UrdfProvider>

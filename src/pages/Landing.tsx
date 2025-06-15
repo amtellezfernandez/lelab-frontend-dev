@@ -206,8 +206,7 @@ const Landing = () => {
     if (!directFollowerConfig) {
       toast({
         title: "Missing Configuration",
-        description:
-          "Please select a calibration config for the follower.",
+        description: "Please select a calibration config for the follower.",
         variant: "destructive",
       });
       return;
@@ -238,7 +237,8 @@ const Landing = () => {
       } else {
         toast({
           title: "Error Starting Direct Follower Control",
-          description: data.message || "Failed to start direct follower control.",
+          description:
+            data.message || "Failed to start direct follower control.",
           variant: "destructive",
         });
       }
@@ -404,7 +404,8 @@ const Landing = () => {
         followerConfigs={followerConfigs}
         isLoadingConfigs={isLoadingConfigs}
         onStart={handleStartDirectFollower}
-      < NgrokConfigModal
+      />
+      <NgrokConfigModal
         open={showNgrokModal}
         onOpenChange={setShowNgrokModal}
       />
