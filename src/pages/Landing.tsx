@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -9,12 +10,13 @@ import PermissionModal from "@/components/landing/PermissionModal";
 import TeleoperationModal from "@/components/landing/TeleoperationModal";
 import RecordingModal from "@/components/landing/RecordingModal";
 import { Action } from "@/components/landing/types";
-import UsageInstructions from "@/components/landing/UsageInstructions";
+import UsageInstructionsModal from "@/components/landing/UsageInstructionsModal";
 
 const Landing = () => {
   const [robotModel, setRobotModel] = useState("");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showTeleoperationModal, setShowTeleoperationModal] = useState(false);
+  const [showUsageModal, setShowUsageModal] = useState(false);
   const [leaderPort, setLeaderPort] = useState("/dev/tty.usbmodem5A460816421");
   const [followerPort, setFollowerPort] = useState(
     "/dev/tty.usbmodem5A460816621"
@@ -271,12 +273,11 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-4 pt-12 sm:pt-20">
-      <div className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-start px-4">
-        <LandingHeader />
-        <UsageInstructions />
+      <div className="w-full max-w-7xl mx-auto px-4 mb-12">
+        <LandingHeader onShowInstructions={() => setShowUsageModal(true)} />
       </div>
 
-      <div className="mt-12 p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-lg space-y-6 border border-gray-700">
+      <div className="p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-lg space-y-6 border border-gray-700">
         <RobotModelSelector
           robotModel={robotModel}
           onValueChange={setRobotModel}
@@ -288,6 +289,11 @@ const Landing = () => {
         open={showPermissionModal}
         onOpenChange={setShowPermissionModal}
         onPermissionsResult={handlePermissions}
+      />
+
+      <UsageInstructionsModal 
+        open={showUsageModal} 
+        onOpenChange={setShowUsageModal} 
       />
 
       <TeleoperationModal
