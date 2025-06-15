@@ -19,7 +19,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, Mic, Settings, Wrench, GraduationCap } from "lucide-react";
+import { Camera, Mic, Settings, ArrowRight } from "lucide-react";
 
 const Landing = () => {
   const [robotModel, setRobotModel] = useState("");
@@ -90,15 +90,9 @@ const Landing = () => {
     }
   };
 
-  const handleCalibrationClick = () => {
+  const handleEditDatasetClick = () => {
     if (robotModel) {
-      navigate("/calibration");
-    }
-  };
-
-  const handleTrainingClick = () => {
-    if (robotModel) {
-      navigate("/training");
+      navigate("/edit-dataset");
     }
   };
 
@@ -223,6 +217,33 @@ const Landing = () => {
     }
   };
 
+  const actions = [
+    {
+      title: "Begin Session",
+      description: "Start a new control session.",
+      handler: handleBeginSession,
+      color: "bg-orange-500 hover:bg-orange-600",
+    },
+    {
+      title: "Teleoperation",
+      description: "Control the robot arm in real-time.",
+      handler: handleTeleoperationClick,
+      color: "bg-yellow-500 hover:bg-yellow-600",
+    },
+    {
+      title: "Record Dataset",
+      description: "Record episodes for training data.",
+      handler: handleRecordingClick,
+      color: "bg-red-500 hover:bg-red-600",
+    },
+    {
+      title: "Edit Dataset",
+      description: "Review and modify recorded datasets.",
+      handler: handleEditDatasetClick,
+      color: "bg-blue-500 hover:bg-blue-600",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
       <div className="text-center space-y-4 max-w-lg w-full">
@@ -245,15 +266,15 @@ const Landing = () => {
         <RadioGroup
           value={robotModel}
           onValueChange={setRobotModel}
-          className="space-y-4"
+          className="space-y-2"
         >
           <div>
             <RadioGroupItem value="SO100" id="so100" className="sr-only" />
             <Label
               htmlFor="so100"
-              className="flex items-center space-x-4 p-4 rounded-md bg-gray-800 border border-gray-700 cursor-pointer transition-all has-[:checked]:border-orange-500 has-[:checked]:bg-gray-800/50"
+              className="flex items-center space-x-4 p-4 rounded-lg bg-gray-800 border border-gray-700 cursor-pointer transition-all"
             >
-              <span className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center group-has-[:checked]:border-orange-500">
+              <span className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center">
                 {robotModel === "SO100" && (
                   <span className="w-3 h-3 rounded-full bg-orange-500" />
                 )}
@@ -265,9 +286,9 @@ const Landing = () => {
             <RadioGroupItem value="SO101" id="so101" className="sr-only" />
             <Label
               htmlFor="so101"
-              className="flex items-center space-x-4 p-4 rounded-md bg-gray-800 border border-gray-700 cursor-pointer transition-all has-[:checked]:border-orange-500 has-[:checked]:bg-gray-800/50"
+              className="flex items-center space-x-4 p-4 rounded-lg bg-gray-800 border border-gray-700 cursor-pointer transition-all"
             >
-              <span className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center group-has-[:checked]:border-orange-500">
+              <span className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center">
                 {robotModel === "SO101" && (
                   <span className="w-3 h-3 rounded-full bg-orange-500" />
                 )}
@@ -276,44 +297,35 @@ const Landing = () => {
             </Label>
           </div>
         </RadioGroup>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button
-            onClick={handleBeginSession}
-            disabled={!robotModel}
-            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white text-lg py-6 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-          >
-            Begin Session
-          </Button>
-          <Button
-            onClick={handleCalibrationClick}
-            disabled={!robotModel}
-            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-lg py-6 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-          >
-            <Wrench className="w-5 h-5 mr-2" />
-            Calibration
-          </Button>
-          <Button
-            onClick={handleTeleoperationClick}
-            disabled={!robotModel}
-            className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white text-lg py-6 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-          >
-            Teleoperation
-          </Button>
-          <Button
-            onClick={handleRecordingClick}
-            disabled={!robotModel}
-            className="flex-1 bg-red-500 hover:bg-red-600 text-white text-lg py-6 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-          >
-            Recording
-          </Button>
-          <Button
-            onClick={handleTrainingClick}
-            disabled={!robotModel}
-            className="flex-1 bg-purple-500 hover:bg-purple-600 text-white text-lg py-6 disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
-          >
-            <GraduationCap className="w-5 h-5 mr-2" />
-            Training
-          </Button>
+        <div className="pt-6">
+          {!robotModel ? (
+            <p className="text-center text-gray-400">
+              Please select a robot model to continue.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {actions.map((action, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700"
+                >
+                  <div>
+                    <h3 className="font-semibold text-lg">{action.title}</h3>
+                    <p className="text-gray-400 text-sm">
+                      {action.description}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={action.handler}
+                    size="icon"
+                    className={`${action.color} text-white`}
+                  >
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
