@@ -9,6 +9,7 @@ import PermissionModal from "@/components/landing/PermissionModal";
 import TeleoperationModal from "@/components/landing/TeleoperationModal";
 import RecordingModal from "@/components/landing/RecordingModal";
 import { Action } from "@/components/landing/types";
+import UsageInstructions from "@/components/landing/UsageInstructions";
 
 const Landing = () => {
   const [robotModel, setRobotModel] = useState("");
@@ -270,7 +271,10 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-4 pt-12 sm:pt-20">
-      <LandingHeader />
+      <div className="w-full max-w-7xl mx-auto grid md:grid-cols-2 gap-8 items-start px-4">
+        <LandingHeader />
+        <UsageInstructions />
+      </div>
 
       <div className="mt-12 p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-lg space-y-6 border border-gray-700">
         <RobotModelSelector
