@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -10,7 +11,6 @@ import TeleoperationModal from "@/components/landing/TeleoperationModal";
 import RecordingModal from "@/components/landing/RecordingModal";
 import { Action } from "@/components/landing/types";
 import UsageInstructionsModal from "@/components/landing/UsageInstructionsModal";
-import FollowerArmControlCard from "@/components/landing/FollowerArmControlCard";
 
 const Landing = () => {
   const [robotModel, setRobotModel] = useState("SO101");
@@ -268,7 +268,6 @@ const Landing = () => {
           onValueChange={setRobotModel}
         />
         <ActionList actions={actions} robotModel={robotModel} />
-        <FollowerArmControlCard />
       </div>
 
       <PermissionModal
