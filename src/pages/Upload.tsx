@@ -17,6 +17,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
+import { useApi } from "@/contexts/ApiContext";
 
 interface DatasetInfo {
   dataset_repo_id: string;
@@ -38,6 +39,7 @@ const Upload = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { baseUrl } = useApi();
 
   // Get initial dataset info from navigation state
   const initialDatasetInfo = location.state?.datasetInfo as DatasetInfo;
@@ -70,7 +72,7 @@ const Upload = () => {
       }
 
       try {
-        const response = await fetch("http://localhost:8000/dataset-info", {
+        const response = await fetch(`${baseUrl}/dataset-info`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -142,7 +144,7 @@ const Upload = () => {
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
-      const response = await fetch("http://localhost:8000/upload-dataset", {
+      const response = await fetch(`${baseUrl}/upload-dataset`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

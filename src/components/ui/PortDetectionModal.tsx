@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Loader2, Search, CheckCircle, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useApi } from "@/contexts/ApiContext";
 
 interface PortDetectionModalProps {
   open: boolean;
@@ -32,6 +33,7 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
     []
   );
   const { toast } = useToast();
+  const { baseUrl } = useApi();
 
   const handleStartDetection = async () => {
     try {
@@ -39,18 +41,15 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
       setError("");
 
       // Start port detection process
-      const response = await fetch(
-        "http://localhost:8000/start-port-detection",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            robot_type: robotType,
-          }),
-        }
-      );
+      const response = await fetch(`${baseUrl}/start-port-detection`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          robot_type: robotType,
+        }),
+      });
 
       const data = await response.json();
 
@@ -76,18 +75,15 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
 
   const detectPortAfterDisconnect = async (portsBefore: string[]) => {
     try {
-      const response = await fetch(
-        "http://localhost:8000/detect-port-after-disconnect",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ports_before: portsBefore,
-          }),
-        }
-      );
+      const response = await fetch(`${baseUrl}/detect-port-after-disconnect`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ports_before: portsBefore,
+        }),
+      });
 
       const data = await response.json();
 
@@ -119,7 +115,7 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
 
   const savePort = async (port: string) => {
     try {
-      await fetch("http://localhost:8000/save-robot-port", {
+      await fetch(`${baseUrl}/save-robot-port`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

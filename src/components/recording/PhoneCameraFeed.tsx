@@ -1,12 +1,13 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { Smartphone, WifiOff } from "lucide-react";
+import { useApi } from "@/contexts/ApiContext";
 
 interface PhoneCameraFeedProps {
   sessionId: string;
 }
 
 const PhoneCameraFeed: React.FC<PhoneCameraFeedProps> = ({ sessionId }) => {
+  const { wsBaseUrl } = useApi();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ const PhoneCameraFeed: React.FC<PhoneCameraFeedProps> = ({ sessionId }) => {
 
     const connectWebSocket = () => {
       try {
-        const ws = new WebSocket(`ws://localhost:8000/ws/camera/${sessionId}`);
+        const ws = new WebSocket(`${wsBaseUrl}/ws/camera/${sessionId}`);
         wsRef.current = ws;
 
         ws.onopen = () => {
