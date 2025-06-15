@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { DragAndDropProvider } from "./contexts/DragAndDropContext";
 import { UrdfProvider } from "./contexts/UrdfContext";
+import { ApiProvider } from "./contexts/ApiContext";
 import PhoneCamera from "./pages/PhoneCamera";
 
 const queryClient = new QueryClient();
@@ -25,26 +26,28 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <ThemeProvider>
-          <UrdfProvider>
-            <DragAndDropProvider>
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Landing />} />
-                  <Route path="/teleoperation" element={<Teleoperation />} />
-                  <Route path="/recording" element={<Recording />} />
-                  <Route path="/upload" element={<Upload />} />
-                  <Route path="/training" element={<Training />} />
-                  <Route path="/calibration" element={<Calibration />} />
-                  <Route path="/edit-dataset" element={<EditDataset />} />
-                  <Route path="/replay-dataset" element={<ReplayDataset />} />
-                  <Route path="/phone-camera" element={<PhoneCamera />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Toaster />
-                <Sonner />
-              </BrowserRouter>
-            </DragAndDropProvider>
-          </UrdfProvider>
+          <ApiProvider>
+            <UrdfProvider>
+              <DragAndDropProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/teleoperation" element={<Teleoperation />} />
+                    <Route path="/recording" element={<Recording />} />
+                    <Route path="/upload" element={<Upload />} />
+                    <Route path="/training" element={<Training />} />
+                    <Route path="/calibration" element={<Calibration />} />
+                    <Route path="/edit-dataset" element={<EditDataset />} />
+                    <Route path="/replay-dataset" element={<ReplayDataset />} />
+                    <Route path="/phone-camera" element={<PhoneCamera />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Toaster />
+                  <Sonner />
+                </BrowserRouter>
+              </DragAndDropProvider>
+            </UrdfProvider>
+          </ApiProvider>
         </ThemeProvider>
       </TooltipProvider>
     </QueryClientProvider>
