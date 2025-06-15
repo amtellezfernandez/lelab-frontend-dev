@@ -20,7 +20,7 @@ const TrainingHeader: React.FC<TrainingHeaderProps> = ({
     return "Ready to Train";
   };
   return <div className="flex items-center justify-between mb-8">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 text-3xl">
         <Button variant="ghost" size="icon" onClick={() => navigate("/")} className="text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg">
           <ArrowLeft className="w-5 h-5" />
         </Button>
