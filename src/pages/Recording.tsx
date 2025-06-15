@@ -8,7 +8,6 @@ import {
   SkipForward,
   RotateCcw,
   Play,
-  GraduationCap,
   QrCode,
 } from "lucide-react";
 import UrdfViewer from "@/components/UrdfViewer";
@@ -37,9 +36,11 @@ interface BackendStatus {
   current_phase: string;
   current_episode?: number;
   total_episodes?: number;
+  saved_episodes?: number;
   phase_elapsed_seconds?: number;
   phase_time_limit_s?: number;
   session_elapsed_seconds?: number;
+  session_ended?: boolean;
   available_controls: {
     stop_recording: boolean;
     exit_early: boolean;
@@ -99,12 +100,23 @@ const Recording = () => {
             const status = await response.json();
             setBackendStatus(status);
 
-            // If backend recording stopped, session is complete
-            if (!status.recording_active && recordingSessionStarted) {
-              toast({
-                title: "Recording Complete!",
-                description: `All episodes have been recorded successfully.`,
-              });
+            // If backend recording stopped and session ended, navigate to upload
+            if (
+              !status.recording_active &&
+              status.session_ended &&
+              recordingSessionStarted
+            ) {
+              // Navigate to upload window with dataset info
+              const datasetInfo = {
+                dataset_repo_id: recordingConfig.dataset_repo_id,
+                single_task: recordingConfig.single_task,
+                num_episodes: recordingConfig.num_episodes,
+                saved_episodes: status.saved_episodes || 0,
+                session_elapsed_seconds: status.session_elapsed_seconds || 0,
+              };
+
+              navigate("/upload", { state: { datasetInfo } });
+              return; // Stop polling after navigation
             }
           }
         } catch (error) {
@@ -120,11 +132,13 @@ const Recording = () => {
     return () => {
       if (statusInterval) clearInterval(statusInterval);
     };
-  }, [recordingSessionStarted, toast]);
+  }, [recordingSessionStarted, recordingConfig, navigate, toast]);
 
   // Generate session ID when component loads
   useEffect(() => {
-    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const newSessionId = `session_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
     setSessionId(newSessionId);
   }, []);
 
@@ -134,7 +148,7 @@ const Recording = () => {
 
     const connectToPhoneCameraWS = () => {
       const ws = new WebSocket(`ws://localhost:8000/ws/camera/${sessionId}`);
-      
+
       ws.onopen = () => {
         console.log("Phone camera WebSocket connected");
       };
@@ -296,7 +310,17 @@ const Recording = () => {
         title: "Recording Stopped",
         description: "Recording session has been stopped.",
       });
-      navigate("/");
+
+      // Navigate to upload window with current dataset info
+      const datasetInfo = {
+        dataset_repo_id: recordingConfig.dataset_repo_id,
+        single_task: recordingConfig.single_task,
+        num_episodes: recordingConfig.num_episodes,
+        saved_episodes: backendStatus?.saved_episodes || 0,
+        session_elapsed_seconds: backendStatus?.session_elapsed_seconds || 0,
+      };
+
+      navigate("/upload", { state: { datasetInfo } });
     } catch (error) {
       toast({
         title: "Error",
@@ -476,7 +500,9 @@ const Recording = () => {
                   Recording Status
                 </h2>
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${getDotColor()}`}></div>
+                  <div
+                    className={`w-2 h-2 rounded-full ${getDotColor()}`}
+                  ></div>
                   <span className={`font-semibold ${getStatusColor()}`}>
                     {getStatusText()}
                   </span>
@@ -550,22 +576,9 @@ const Recording = () => {
                     {recordingConfig.dataset_repo_id}
                   </span>
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    onClick={() => navigate("/training")}
-                    className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 text-lg"
-                  >
-                    <GraduationCap className="w-5 h-5 mr-2" />
-                    Start Training
-                  </Button>
-                  <Button
-                    onClick={() => navigate("/")}
-                    variant="outline"
-                    className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-3 px-6 text-lg"
-                  >
-                    Return to Home
-                  </Button>
-                </div>
+                <p className="text-gray-400 mb-6">
+                  You will be redirected to the upload window shortly...
+                </p>
               </div>
             )}
 
@@ -585,12 +598,12 @@ const Recording = () => {
                     enter reset phase (Right Arrow)
                   </li>
                   <li>
-                    • <strong>Re-record Episode:</strong> Restart current episode
-                    after reset phase (Left Arrow)
+                    • <strong>Re-record Episode:</strong> Restart current
+                    episode after reset phase (Left Arrow)
                   </li>
                   <li>
-                    • <strong>Auto-end:</strong> Episode ends automatically after{" "}
-                    {formatTime(phaseTimeLimit)}
+                    • <strong>Auto-end:</strong> Episode ends automatically
+                    after {formatTime(phaseTimeLimit)}
                   </li>
                   <li>
                     • <strong>Stop Recording:</strong> End entire session (ESC
@@ -609,8 +622,8 @@ const Recording = () => {
                     after {formatTime(phaseTimeLimit)}
                   </li>
                   <li>
-                    • <strong>Reset Phase:</strong> Use this time to prepare your
-                    environment for the next episode
+                    • <strong>Reset Phase:</strong> Use this time to prepare
+                    your environment for the next episode
                   </li>
                   <li>
                     • <strong>Stop Recording:</strong> End entire session (ESC
@@ -624,7 +637,9 @@ const Recording = () => {
           {/* Phone Camera Feed - takes up 1 column */}
           {phoneCameraConnected && (
             <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-              <h3 className="text-sm font-semibold text-gray-400 mb-3">Phone Camera</h3>
+              <h3 className="text-sm font-semibold text-gray-400 mb-3">
+                Phone Camera
+              </h3>
               <PhoneCameraFeed sessionId={sessionId} />
             </div>
           )}
@@ -632,7 +647,9 @@ const Recording = () => {
 
         {/* URDF Viewer Section */}
         <div className="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-8">
-          <h2 className="text-xl font-semibold text-white mb-4">Robot Visualizer</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            Robot Visualizer
+          </h2>
           <div className="h-96 bg-gray-800 rounded-lg overflow-hidden">
             <UrdfViewer />
             <UrdfProcessorInitializer />
