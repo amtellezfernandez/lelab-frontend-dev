@@ -22,7 +22,13 @@ const NgrokConfigModal: React.FC<NgrokConfigModalProps> = ({
   open,
   onOpenChange,
 }) => {
-  const { ngrokUrl, isNgrokEnabled, setNgrokUrl, resetToLocalhost } = useApi();
+  const {
+    ngrokUrl,
+    isNgrokEnabled,
+    setNgrokUrl,
+    resetToLocalhost,
+    fetchWithHeaders,
+  } = useApi();
   const [inputUrl, setInputUrl] = useState(ngrokUrl);
   const [isTestingConnection, setIsTestingConnection] = useState(false);
   const { toast } = useToast();
@@ -49,7 +55,7 @@ const NgrokConfigModal: React.FC<NgrokConfigModalProps> = ({
       cleanUrl = cleanUrl.replace(/\/$/, "");
 
       // Test the connection
-      const testResponse = await fetch(`${cleanUrl}/health`, {
+      const testResponse = await fetchWithHeaders(`${cleanUrl}/health`, {
         method: "GET",
         headers: {
           Accept: "application/json",

@@ -13,6 +13,8 @@ interface ApiContextType {
   setNgrokUrl: (url: string) => void;
   resetToLocalhost: () => void;
   ngrokUrl: string;
+  getHeaders: () => Record<string, string>;
+  fetchWithHeaders: (url: string, options?: RequestInit) => Promise<Response>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -75,6 +77,36 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
       ? ngrokUrl.replace("https://", "wss://").replace("http://", "ws://")
       : DEFAULT_WS_LOCALHOST;
 
+  // Helper function to get headers with ngrok skip warning if needed
+  const getHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+
+    // Add ngrok skip warning header when using ngrok
+    if (isNgrokEnabled && ngrokUrl) {
+      headers["ngrok-skip-browser-warning"] = "true";
+    }
+
+    return headers;
+  };
+
+  // Enhanced fetch function that automatically includes necessary headers
+  const fetchWithHeaders = async (
+    url: string,
+    options: RequestInit = {}
+  ): Promise<Response> => {
+    const enhancedOptions: RequestInit = {
+      ...options,
+      headers: {
+        ...getHeaders(),
+        ...options.headers,
+      },
+    };
+
+    return fetch(url, enhancedOptions);
+  };
+
   return (
     <ApiContext.Provider
       value={{
@@ -84,6 +116,8 @@ export const ApiProvider: React.FC<ApiProviderProps> = ({ children }) => {
         setNgrokUrl,
         resetToLocalhost,
         ngrokUrl,
+        getHeaders,
+        fetchWithHeaders,
       }}
     >
       {children}

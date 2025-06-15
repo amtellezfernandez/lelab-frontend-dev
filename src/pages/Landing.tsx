@@ -14,7 +14,7 @@ import UsageInstructionsModal from "@/components/landing/UsageInstructionsModal"
 import { useApi } from "@/contexts/ApiContext";
 
 const Landing = () => {
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
   const [robotModel, setRobotModel] = useState("");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showTeleoperationModal, setShowTeleoperationModal] = useState(false);
@@ -50,7 +50,7 @@ const Landing = () => {
   const loadConfigs = async () => {
     setIsLoadingConfigs(true);
     try {
-      const response = await fetch(`${baseUrl}/get-configs`);
+      const response = await fetchWithHeaders(`${baseUrl}/get-configs`);
       const data = await response.json();
       setLeaderConfigs(data.leader_configs || []);
       setFollowerConfigs(data.follower_configs || []);
@@ -115,11 +115,8 @@ const Landing = () => {
     }
 
     try {
-      const response = await fetch(`${baseUrl}/move-arm`, {
+      const response = await fetchWithHeaders(`${baseUrl}/move-arm`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           leader_port: leaderPort,
           follower_port: followerPort,
