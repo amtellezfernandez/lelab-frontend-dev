@@ -43,13 +43,13 @@ const VisualizerPanel: React.FC<VisualizerPanelProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-1 gap-2 lg:w-64 flex-shrink-0">
+      <div className="grid grid-cols-2 lg:grid-cols-2 gap-2 lg:w-96 flex-shrink-0">
         {[1, 2, 3, 4].map((cam) => (
           <div
             key={cam}
             className="aspect-video bg-gray-900 rounded border border-gray-700 flex items-center justify-center"
           >
-            <span className="text-gray-400 text-sm">Camera {cam}</span>
+            <span className="text-gray-400 text-sm">No Camera Available</span>
           </div>
         ))}
       </div>
