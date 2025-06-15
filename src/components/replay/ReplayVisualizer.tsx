@@ -15,18 +15,18 @@ const ReplayVisualizer: React.FC<ReplayVisualizerProps> = ({
   return (
     <div
       className={cn(
-        "h-full w-full space-y-4 lg:space-y-0 lg:space-x-4 flex flex-col lg:flex-row",
+        "h-full w-full space-y-4 flex flex-col",
         className
       )}
     >
       <div className="bg-gray-900 rounded-lg p-4 flex-1 flex flex-col border border-gray-700">
-        <div className="flex-1 bg-black rounded border border-gray-800 min-h-[50vh] lg:min-h-0">
+        <div className="flex-1 bg-black rounded border border-gray-800 min-h-[50vh]">
           <UrdfProcessorInitializer />
           <UrdfViewer />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-2 gap-4 lg:w-96 flex-shrink-0">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[1, 2, 3, 4].map((cam) => (
           <div
             key={cam}
