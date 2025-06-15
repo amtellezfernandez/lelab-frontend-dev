@@ -39,7 +39,7 @@ const Upload = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
 
   // Get initial dataset info from navigation state
   const initialDatasetInfo = location.state?.datasetInfo as DatasetInfo;
@@ -72,11 +72,8 @@ const Upload = () => {
       }
 
       try {
-        const response = await fetch(`${baseUrl}/dataset-info`, {
+        const response = await fetchWithHeaders(`${baseUrl}/dataset-info`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             dataset_repo_id: initialDatasetInfo.dataset_repo_id,
           }),
@@ -144,11 +141,8 @@ const Upload = () => {
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
-      const response = await fetch(`${baseUrl}/upload-dataset`, {
+      const response = await fetchWithHeaders(`${baseUrl}/upload-dataset`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           dataset_repo_id: datasetInfo.dataset_repo_id,
           tags,

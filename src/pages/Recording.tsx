@@ -45,7 +45,7 @@ const Recording = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { baseUrl, wsBaseUrl } = useApi();
+  const { baseUrl, wsBaseUrl, fetchWithHeaders } = useApi();
 
   // Get recording config from navigation state
   const recordingConfig = location.state?.recordingConfig as RecordingConfig;
@@ -87,7 +87,9 @@ const Recording = () => {
     if (recordingSessionStarted) {
       const pollStatus = async () => {
         try {
-          const response = await fetch(`${baseUrl}/recording-status`);
+          const response = await fetchWithHeaders(
+            `${baseUrl}/recording-status`
+          );
           if (response.ok) {
             const status = await response.json();
             setBackendStatus(status);
@@ -181,11 +183,8 @@ const Recording = () => {
 
   const startRecordingSession = async () => {
     try {
-      const response = await fetch(`${baseUrl}/start-recording`, {
+      const response = await fetchWithHeaders(`${baseUrl}/start-recording`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(recordingConfig),
       });
 
@@ -220,9 +219,12 @@ const Recording = () => {
     if (!backendStatus?.available_controls.exit_early) return;
 
     try {
-      const response = await fetch(`${baseUrl}/recording-exit-early`, {
-        method: "POST",
-      });
+      const response = await fetchWithHeaders(
+        `${baseUrl}/recording-exit-early`,
+        {
+          method: "POST",
+        }
+      );
       const data = await response.json();
 
       if (response.ok) {
@@ -259,9 +261,12 @@ const Recording = () => {
     if (!backendStatus?.available_controls.rerecord_episode) return;
 
     try {
-      const response = await fetch(`${baseUrl}/recording-rerecord-episode`, {
-        method: "POST",
-      });
+      const response = await fetchWithHeaders(
+        `${baseUrl}/recording-rerecord-episode`,
+        {
+          method: "POST",
+        }
+      );
       const data = await response.json();
 
       if (response.ok) {
@@ -288,7 +293,7 @@ const Recording = () => {
   // Equivalent to pressing ESC key in original record.py
   const handleStopRecording = async () => {
     try {
-      const response = await fetch(`${baseUrl}/stop-recording`, {
+      const response = await fetchWithHeaders(`${baseUrl}/stop-recording`, {
         method: "POST",
       });
 

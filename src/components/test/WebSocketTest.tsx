@@ -9,7 +9,7 @@ interface JointData {
 }
 
 const WebSocketTest: React.FC = () => {
-  const { baseUrl, wsBaseUrl } = useApi();
+  const { baseUrl, wsBaseUrl, fetchWithHeaders } = useApi();
   const [isConnected, setIsConnected] = useState(false);
   const [lastMessage, setLastMessage] = useState<JointData | null>(null);
   const [connectionStatus, setConnectionStatus] =
@@ -18,7 +18,7 @@ const WebSocketTest: React.FC = () => {
 
   const connect = () => {
     // First test server health
-    fetch(`${baseUrl}/health`)
+    fetchWithHeaders(`${baseUrl}/health`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Server health:", data);

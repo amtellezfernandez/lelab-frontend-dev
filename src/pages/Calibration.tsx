@@ -61,7 +61,7 @@ interface CalibrationConfig {
 const Calibration = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
 
   // Ref for auto-scrolling console
   const consoleRef = useRef<HTMLDivElement>(null);
@@ -101,7 +101,7 @@ const Calibration = () => {
   // Poll calibration status
   const pollStatus = async () => {
     try {
-      const response = await fetch(`${baseUrl}/calibration-status`);
+      const response = await fetchWithHeaders(`${baseUrl}/calibration-status`);
       if (response.ok) {
         const status = await response.json();
         setCalibrationStatus(status);
@@ -137,11 +137,8 @@ const Calibration = () => {
     };
 
     try {
-      const response = await fetch(`${baseUrl}/start-calibration`, {
+      const response = await fetchWithHeaders(`${baseUrl}/start-calibration`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(request),
       });
 
@@ -173,7 +170,7 @@ const Calibration = () => {
   // Stop calibration
   const handleStopCalibration = async () => {
     try {
-      const response = await fetch(`${baseUrl}/stop-calibration`, {
+      const response = await fetchWithHeaders(`${baseUrl}/stop-calibration`, {
         method: "POST",
       });
 
@@ -225,7 +222,7 @@ const Calibration = () => {
 
     setIsLoadingConfigs(true);
     try {
-      const response = await fetch(
+      const response = await fetchWithHeaders(
         `${baseUrl}/calibration-configs/${deviceType}`
       );
       const data = await response.json();
@@ -255,7 +252,7 @@ const Calibration = () => {
     if (!deviceType) return;
 
     try {
-      const response = await fetch(
+      const response = await fetchWithHeaders(
         `${baseUrl}/calibration-configs/${deviceType}/${configName}`,
         { method: "DELETE" }
       );
@@ -291,11 +288,8 @@ const Calibration = () => {
     console.log("🔵 Enter button clicked - sending input...");
 
     try {
-      const response = await fetch(`${baseUrl}/calibration-input`, {
+      const response = await fetchWithHeaders(`${baseUrl}/calibration-input`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({ input: "\n" }), // Send actual newline character
       });
 
@@ -373,7 +367,9 @@ const Calibration = () => {
 
       try {
         const robotType = deviceType === "robot" ? "follower" : "leader";
-        const response = await fetch(`${baseUrl}/robot-port/${robotType}`);
+        const response = await fetchWithHeaders(
+          `${baseUrl}/robot-port/${robotType}`
+        );
         const data = await response.json();
         if (data.status === "success") {
           // Use saved port if available, otherwise use default port

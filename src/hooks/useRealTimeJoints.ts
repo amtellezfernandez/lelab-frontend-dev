@@ -19,7 +19,7 @@ export const useRealTimeJoints = ({
   enabled = true,
   websocketUrl,
 }: UseRealTimeJointsProps) => {
-  const { baseUrl, wsBaseUrl } = useApi();
+  const { baseUrl, wsBaseUrl, fetchWithHeaders } = useApi();
   const defaultWebSocketUrl = `${wsBaseUrl}/ws/joint-data`;
   const finalWebSocketUrl = websocketUrl || defaultWebSocketUrl;
   const wsRef = useRef<WebSocket | null>(null);
@@ -51,7 +51,7 @@ export const useRealTimeJoints = ({
     // First, test if the server is running
     const testServerConnection = async () => {
       try {
-        const response = await fetch(`${baseUrl}/health`);
+        const response = await fetchWithHeaders(`${baseUrl}/health`);
         if (!response.ok) {
           console.error("❌ Server health check failed:", response.status);
           return false;

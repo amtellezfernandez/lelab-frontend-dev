@@ -7,13 +7,13 @@ import { useApi } from "@/contexts/ApiContext";
 const TeleoperationPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
 
   const handleGoBack = async () => {
     try {
       // Stop the teleoperation process before navigating back
       console.log("🛑 Stopping teleoperation...");
-      const response = await fetch(`${baseUrl}/stop-teleoperation`, {
+      const response = await fetchWithHeaders(`${baseUrl}/stop-teleoperation`, {
         method: "POST",
       });
 

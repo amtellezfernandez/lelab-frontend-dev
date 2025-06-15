@@ -54,7 +54,7 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
   isLoadingConfigs,
   onStart,
 }) => {
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
   const [showPortDetection, setShowPortDetection] = useState(false);
   const [detectionRobotType, setDetectionRobotType] = useState<
     "leader" | "follower"
@@ -65,14 +65,18 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
     const loadSavedPorts = async () => {
       try {
         // Load leader port
-        const leaderResponse = await fetch(`${baseUrl}/robot-port/leader`);
+        const leaderResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-port/leader`
+        );
         const leaderData = await leaderResponse.json();
         if (leaderData.status === "success" && leaderData.default_port) {
           setLeaderPort(leaderData.default_port);
         }
 
         // Load follower port
-        const followerResponse = await fetch(`${baseUrl}/robot-port/follower`);
+        const followerResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-port/follower`
+        );
         const followerData = await followerResponse.json();
         if (followerData.status === "success" && followerData.default_port) {
           setFollowerPort(followerData.default_port);

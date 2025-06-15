@@ -33,7 +33,7 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
     []
   );
   const { toast } = useToast();
-  const { baseUrl } = useApi();
+  const { baseUrl, fetchWithHeaders } = useApi();
 
   const handleStartDetection = async () => {
     try {
@@ -41,15 +41,15 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
       setError("");
 
       // Start port detection process
-      const response = await fetch(`${baseUrl}/start-port-detection`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          robot_type: robotType,
-        }),
-      });
+      const response = await fetchWithHeaders(
+        `${baseUrl}/start-port-detection`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            robot_type: robotType,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -75,15 +75,15 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
 
   const detectPortAfterDisconnect = async (portsBefore: string[]) => {
     try {
-      const response = await fetch(`${baseUrl}/detect-port-after-disconnect`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ports_before: portsBefore,
-        }),
-      });
+      const response = await fetchWithHeaders(
+        `${baseUrl}/detect-port-after-disconnect`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            ports_before: portsBefore,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -115,11 +115,8 @@ const PortDetectionModal: React.FC<PortDetectionModalProps> = ({
 
   const savePort = async (port: string) => {
     try {
-      await fetch(`${baseUrl}/save-robot-port`, {
+      await fetchWithHeaders(`${baseUrl}/save-robot-port`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           robot_type: robotType,
           port: port,
