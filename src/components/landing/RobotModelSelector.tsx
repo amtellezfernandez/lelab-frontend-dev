@@ -1,13 +1,10 @@
-
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
 interface RobotModelSelectorProps {
   robotModel: string;
   onValueChange: (model: string) => void;
 }
-
 const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
   robotModel,
   onValueChange
@@ -23,7 +20,8 @@ const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
             <span className="w-6 h-6 rounded-full border-2 border-gray-500 flex items-center justify-center">
               {robotModel === "SO100" && <span className="w-3 h-3 rounded-full bg-orange-500" />}
             </span>
-            <span className="text-lg flex-1">SO100</span>
+            <span className="text-lg flex-1">SO100/SO101
+          </span>
           </Label>
         </div>
         <div>
@@ -38,5 +36,4 @@ const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
       </RadioGroup>
     </>;
 };
-
 export default RobotModelSelector;
