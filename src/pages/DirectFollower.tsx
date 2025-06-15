@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import DirectFollowerControlPanel from "@/components/control/DirectFollowerControlPanel";
 import UrdfViewer from "@/components/UrdfViewer";
 import UrdfProcessorInitializer from "@/components/UrdfProcessorInitializer";
+import Logo from "@/components/Logo";
 
 const DirectFollowerPage = () => {
   const navigate = useNavigate();
@@ -69,12 +70,8 @@ const DirectFollowerPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">L</span>
-                </div>
-                <span className="text-xl font-bold text-white">LiveLab</span>
-              </div>
+              {/* Only the logo, no "LiveLab" or blue L avatar */}
+              <Logo iconOnly />
               <div className="w-px h-6 bg-gray-700" />
               <h2 className="text-xl font-medium text-gray-200">Direct Follower Control</h2>
             </div>
