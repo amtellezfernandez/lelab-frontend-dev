@@ -6,6 +6,7 @@ import { ArrowLeft, Square, SkipForward, RotateCcw, Play } from "lucide-react";
 import UrdfViewer from "@/components/UrdfViewer";
 import UrdfProcessorInitializer from "@/components/UrdfProcessorInitializer";
 import PhoneCameraFeed from "@/components/recording/PhoneCameraFeed";
+import { useApi } from "@/contexts/ApiContext";
 
 interface RecordingConfig {
   leader_port: string;
@@ -44,6 +45,7 @@ const Recording = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { baseUrl, wsBaseUrl, fetchWithHeaders } = useApi();
 
   // Get recording config from navigation state
   const recordingConfig = location.state?.recordingConfig as RecordingConfig;
@@ -85,8 +87,8 @@ const Recording = () => {
     if (recordingSessionStarted) {
       const pollStatus = async () => {
         try {
-          const response = await fetch(
-            "http://localhost:8000/recording-status"
+          const response = await fetchWithHeaders(
+            `${baseUrl}/recording-status`
           );
           if (response.ok) {
             const status = await response.json();
@@ -139,7 +141,7 @@ const Recording = () => {
     if (!sessionId) return;
 
     const connectToPhoneCameraWS = () => {
-      const ws = new WebSocket(`ws://localhost:8000/ws/camera/${sessionId}`);
+      const ws = new WebSocket(`${wsBaseUrl}/ws/camera/${sessionId}`);
 
       ws.onopen = () => {
         console.log("Phone camera WebSocket connected");
@@ -181,11 +183,8 @@ const Recording = () => {
 
   const startRecordingSession = async () => {
     try {
-      const response = await fetch("http://localhost:8000/start-recording", {
+      const response = await fetchWithHeaders(`${baseUrl}/start-recording`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(recordingConfig),
       });
 
@@ -220,8 +219,8 @@ const Recording = () => {
     if (!backendStatus?.available_controls.exit_early) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/recording-exit-early",
+      const response = await fetchWithHeaders(
+        `${baseUrl}/recording-exit-early`,
         {
           method: "POST",
         }
@@ -262,8 +261,8 @@ const Recording = () => {
     if (!backendStatus?.available_controls.rerecord_episode) return;
 
     try {
-      const response = await fetch(
-        "http://localhost:8000/recording-rerecord-episode",
+      const response = await fetchWithHeaders(
+        `${baseUrl}/recording-rerecord-episode`,
         {
           method: "POST",
         }
@@ -294,7 +293,7 @@ const Recording = () => {
   // Equivalent to pressing ESC key in original record.py
   const handleStopRecording = async () => {
     try {
-      const response = await fetch("http://localhost:8000/stop-recording", {
+      const response = await fetchWithHeaders(`${baseUrl}/stop-recording`, {
         method: "POST",
       });
 

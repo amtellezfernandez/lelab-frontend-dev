@@ -1,5 +1,9 @@
-
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  BrowserRouter,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { UrdfProvider } from "@/contexts/UrdfContext";
@@ -17,36 +21,40 @@ import Upload from "@/pages/Upload";
 import PhoneCamera from "@/pages/PhoneCamera";
 import NotFound from "@/pages/NotFound";
 import "./App.css";
+import { TooltipProvider } from "@radix-ui/react-tooltip";
+import { ApiProvider } from "./contexts/ApiContext";
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <UrdfProvider>
-          <DragAndDropProvider>
-            <Router>
-              <div className="min-h-screen bg-background">
-                <Routes>
-                  <Route path="/" element={<Landing />} />
-                  <Route path="/teleoperation" element={<Teleoperation />} />
-                  <Route path="/direct-follower" element={<DirectFollower />} />
-                  <Route path="/calibration" element={<Calibration />} />
-                  <Route path="/recording" element={<Recording />} />
-                  <Route path="/training" element={<Training />} />
-                  <Route path="/replay-dataset" element={<ReplayDataset />} />
-                  <Route path="/edit-dataset" element={<EditDataset />} />
-                  <Route path="/upload" element={<Upload />} />
-                  <Route path="/phone-camera" element={<PhoneCamera />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <Toaster />
-              </div>
-            </Router>
-          </DragAndDropProvider>
-        </UrdfProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        <ThemeProvider>
+          <ApiProvider>
+            <UrdfProvider>
+              <DragAndDropProvider>
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/teleoperation" element={<Teleoperation />} />
+                    <Route path="/recording" element={<Recording />} />
+                    <Route path="/upload" element={<Upload />} />
+                    <Route path="/training" element={<Training />} />
+                    <Route path="/calibration" element={<Calibration />} />
+                    <Route path="/edit-dataset" element={<EditDataset />} />
+                    <Route path="/replay-dataset" element={<ReplayDataset />} />
+                    <Route path="/phone-camera" element={<PhoneCamera />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <Toaster />
+                  <Sonner />
+                </BrowserRouter>
+              </DragAndDropProvider>
+            </UrdfProvider>
+          </ApiProvider>
+        </ThemeProvider>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

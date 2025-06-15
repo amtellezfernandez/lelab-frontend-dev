@@ -19,6 +19,7 @@ import {
 import { Settings } from "lucide-react";
 import PortDetectionModal from "@/components/ui/PortDetectionModal";
 import PortDetectionButton from "@/components/ui/PortDetectionButton";
+import { useApi } from "@/contexts/ApiContext";
 
 interface TeleoperationModalProps {
   open: boolean;
@@ -53,6 +54,7 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
   isLoadingConfigs,
   onStart,
 }) => {
+  const { baseUrl, fetchWithHeaders } = useApi();
   const [showPortDetection, setShowPortDetection] = useState(false);
   const [detectionRobotType, setDetectionRobotType] = useState<
     "leader" | "follower"
@@ -63,8 +65,8 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
     const loadSavedPorts = async () => {
       try {
         // Load leader port
-        const leaderResponse = await fetch(
-          "http://localhost:8000/robot-port/leader"
+        const leaderResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-port/leader`
         );
         const leaderData = await leaderResponse.json();
         if (leaderData.status === "success" && leaderData.default_port) {
@@ -72,8 +74,8 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
         }
 
         // Load follower port
-        const followerResponse = await fetch(
-          "http://localhost:8000/robot-port/follower"
+        const followerResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-port/follower`
         );
         const followerData = await followerResponse.json();
         if (followerData.status === "success" && followerData.default_port) {

@@ -1,12 +1,13 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Camera, WifiOff, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useApi } from "@/contexts/ApiContext";
 
 const PhoneCamera = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("sessionId");
+  const { wsBaseUrl } = useApi();
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -29,7 +30,7 @@ const PhoneCamera = () => {
 
   const connectWebSocket = () => {
     try {
-      const ws = new WebSocket(`ws://localhost:8000/ws/camera/${sessionId}`);
+      const ws = new WebSocket(`${wsBaseUrl}/ws/camera/${sessionId}`);
       wsRef.current = ws;
 
       ws.onopen = () => {
@@ -59,12 +60,12 @@ const PhoneCamera = () => {
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
+        video: {
           facingMode: "environment", // Use back camera
           width: { ideal: 640 },
-          height: { ideal: 480 }
+          height: { ideal: 480 },
         },
-        audio: false
+        audio: false,
       });
 
       streamRef.current = stream;
@@ -97,11 +98,15 @@ const PhoneCamera = () => {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       // Convert to blob and send via WebSocket
-      canvas.toBlob((blob) => {
-        if (blob && ws.readyState === WebSocket.OPEN) {
-          ws.send(blob);
-        }
-      }, "image/jpeg", 0.7);
+      canvas.toBlob(
+        (blob) => {
+          if (blob && ws.readyState === WebSocket.OPEN) {
+            ws.send(blob);
+          }
+        },
+        "image/jpeg",
+        0.7
+      );
     };
 
     // Send frames at ~10 FPS
@@ -112,7 +117,7 @@ const PhoneCamera = () => {
 
   const cleanup = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
     if (wsRef.current) {
       wsRef.current.close();
@@ -148,7 +153,10 @@ const PhoneCamera = () => {
               <WifiOff className="w-16 h-16 text-red-400 mx-auto mb-4" />
               <h2 className="text-xl font-bold mb-2">Connection Error</h2>
               <p className="text-gray-400 mb-4">{error}</p>
-              <Button onClick={connectWebSocket} className="bg-blue-500 hover:bg-blue-600">
+              <Button
+                onClick={connectWebSocket}
+                className="bg-blue-500 hover:bg-blue-600"
+              >
                 Retry Connection
               </Button>
             </div>
@@ -166,9 +174,10 @@ const PhoneCamera = () => {
             <Camera className="w-16 h-16 text-blue-400 mb-4" />
             <h2 className="text-xl font-bold mb-2">Ready to Start</h2>
             <p className="text-gray-400 mb-6 text-center">
-              Tap the button below to start your camera and begin streaming to the recording session.
+              Tap the button below to start your camera and begin streaming to
+              the recording session.
             </p>
-            <Button 
+            <Button
               onClick={startCamera}
               className="bg-blue-500 hover:bg-blue-600 px-8 py-4 text-lg"
             >
@@ -185,7 +194,7 @@ const PhoneCamera = () => {
               </div>
               <Smartphone className="w-5 h-5 text-blue-400" />
             </div>
-            
+
             <div className="flex-1 bg-gray-900 rounded-lg overflow-hidden">
               <video
                 ref={videoRef}
@@ -195,13 +204,13 @@ const PhoneCamera = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
             <canvas ref={canvasRef} className="hidden" />
-            
+
             <div className="mt-4 text-center">
               <p className="text-gray-400 text-sm">
-                Your camera is now streaming to the recording session.
-                Keep this page open during recording.
+                Your camera is now streaming to the recording session. Keep this
+                page open during recording.
               </p>
             </div>
           </div>

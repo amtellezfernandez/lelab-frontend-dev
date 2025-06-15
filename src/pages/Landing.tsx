@@ -8,15 +8,18 @@ import ActionList from "@/components/landing/ActionList";
 import PermissionModal from "@/components/landing/PermissionModal";
 import TeleoperationModal from "@/components/landing/TeleoperationModal";
 import RecordingModal from "@/components/landing/RecordingModal";
+import NgrokConfigModal from "@/components/landing/NgrokConfigModal";
 import { Action } from "@/components/landing/types";
 import UsageInstructionsModal from "@/components/landing/UsageInstructionsModal";
 import DirectFollowerModal from "@/components/landing/DirectFollowerModal";
+import { useApi } from "@/contexts/ApiContext";
 
 const Landing = () => {
   const [robotModel, setRobotModel] = useState("SO101");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showTeleoperationModal, setShowTeleoperationModal] = useState(false);
   const [showUsageModal, setShowUsageModal] = useState(false);
+  const [showNgrokModal, setShowNgrokModal] = useState(false);
   const [leaderPort, setLeaderPort] = useState("/dev/tty.usbmodem5A460816421");
   const [followerPort, setFollowerPort] = useState(
     "/dev/tty.usbmodem5A460816621"
@@ -26,6 +29,7 @@ const Landing = () => {
   const [leaderConfigs, setLeaderConfigs] = useState<string[]>([]);
   const [followerConfigs, setFollowerConfigs] = useState<string[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState(false);
+  const { baseUrl, fetchWithHeaders } = useApi();
 
   // Recording state
   const [showRecordingModal, setShowRecordingModal] = useState(false);
@@ -54,7 +58,7 @@ const Landing = () => {
   const loadConfigs = async () => {
     setIsLoadingConfigs(true);
     try {
-      const response = await fetch("http://localhost:8000/get-configs");
+      const response = await fetchWithHeaders(`${baseUrl}/get-configs`);
       const data = await response.json();
       setLeaderConfigs(data.leader_configs || []);
       setFollowerConfigs(data.follower_configs || []);
@@ -126,11 +130,8 @@ const Landing = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/move-arm", {
+      const response = await fetchWithHeaders(`${baseUrl}/move-arm`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           leader_port: leaderPort,
           follower_port: followerPort,
@@ -328,7 +329,10 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center p-4 pt-12 sm:pt-20">
       <div className="w-full max-w-7xl mx-auto px-4 mb-12">
-        <LandingHeader onShowInstructions={() => setShowUsageModal(true)} />
+        <LandingHeader
+          onShowInstructions={() => setShowUsageModal(true)}
+          onShowNgrokConfig={() => setShowNgrokModal(true)}
+        />
       </div>
 
       <div className="p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-4xl space-y-6 border border-gray-700">
@@ -345,9 +349,9 @@ const Landing = () => {
         onPermissionsResult={handlePermissions}
       />
 
-      <UsageInstructionsModal 
-        open={showUsageModal} 
-        onOpenChange={setShowUsageModal} 
+      <UsageInstructionsModal
+        open={showUsageModal}
+        onOpenChange={setShowUsageModal}
       />
 
       <TeleoperationModal
@@ -400,6 +404,9 @@ const Landing = () => {
         followerConfigs={followerConfigs}
         isLoadingConfigs={isLoadingConfigs}
         onStart={handleStartDirectFollower}
+      < NgrokConfigModal
+        open={showNgrokModal}
+        onOpenChange={setShowNgrokModal}
       />
     </div>
   );
