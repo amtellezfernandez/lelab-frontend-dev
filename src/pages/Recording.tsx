@@ -9,7 +9,12 @@ import {
   RotateCcw,
   Play,
   GraduationCap,
+  QrCode,
 } from "lucide-react";
+import UrdfViewer from "@/components/UrdfViewer";
+import UrdfProcessorInitializer from "@/components/UrdfProcessorInitializer";
+import QrCodeModal from "@/components/recording/QrCodeModal";
+import PhoneCameraFeed from "@/components/recording/PhoneCameraFeed";
 
 interface RecordingConfig {
   leader_port: string;
@@ -55,6 +60,11 @@ const Recording = () => {
     null
   );
   const [recordingSessionStarted, setRecordingSessionStarted] = useState(false);
+
+  // QR Code and camera states
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
+  const [phoneCameraConnected, setPhoneCameraConnected] = useState(false);
 
   // Redirect if no config provided
   useEffect(() => {
@@ -111,6 +121,49 @@ const Recording = () => {
       if (statusInterval) clearInterval(statusInterval);
     };
   }, [recordingSessionStarted, toast]);
+
+  // Generate session ID when component loads
+  useEffect(() => {
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    setSessionId(newSessionId);
+  }, []);
+
+  // Listen for phone camera connections
+  useEffect(() => {
+    if (!sessionId) return;
+
+    const connectToPhoneCameraWS = () => {
+      const ws = new WebSocket(`ws://localhost:8000/ws/camera/${sessionId}`);
+      
+      ws.onopen = () => {
+        console.log("Phone camera WebSocket connected");
+      };
+
+      ws.onmessage = (event) => {
+        if (event.data === "camera_connected" && !phoneCameraConnected) {
+          setPhoneCameraConnected(true);
+          toast({
+            title: "Phone Camera Connected!",
+            description: "New camera feed detected and connected successfully.",
+          });
+        }
+      };
+
+      ws.onclose = () => {
+        console.log("Phone camera WebSocket disconnected");
+        setPhoneCameraConnected(false);
+      };
+
+      ws.onerror = (error) => {
+        console.error("Phone camera WebSocket error:", error);
+      };
+
+      return ws;
+    };
+
+    const ws = connectToPhoneCameraWS();
+    return () => ws.close();
+  }, [sessionId, phoneCameraConnected, toast]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -332,9 +385,20 @@ const Recording = () => {
             Back to Home
           </Button>
 
-          <div className="flex items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${getDotColor()}`}></div>
-            <h1 className="text-3xl font-bold">Recording Session</h1>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${getDotColor()}`}></div>
+              <h1 className="text-3xl font-bold">Recording Session</h1>
+            </div>
+            <Button
+              onClick={() => setShowQrModal(true)}
+              variant="outline"
+              size="sm"
+              className="border-gray-500 hover:border-blue-500 text-gray-300 hover:text-blue-400"
+              title="Add Phone Camera"
+            >
+              <QrCode className="w-4 h-4" />
+            </Button>
           </div>
         </div>
 
@@ -402,158 +466,186 @@ const Recording = () => {
         </div>
 
         {/* Status and Controls */}
-        <div className="bg-gray-900 rounded-lg p-6 border border-gray-700">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-white mb-2">
-                Recording Status
-              </h2>
-              <div className="flex items-center gap-3">
-                <div className={`w-2 h-2 rounded-full ${getDotColor()}`}></div>
-                <span className={`font-semibold ${getStatusColor()}`}>
-                  {getStatusText()}
-                </span>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          {/* Recording Status - takes up 3 columns */}
+          <div className="lg:col-span-3 bg-gray-900 rounded-lg p-6 border border-gray-700">
+            {/* Status header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-2">
+                  Recording Status
+                </h2>
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${getDotColor()}`}></div>
+                  <span className={`font-semibold ${getStatusColor()}`}>
+                    {getStatusText()}
+                  </span>
+                </div>
               </div>
+            </div>
+
+            {/* Recording Phase Controls */}
+            {currentPhase === "recording" && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Button
+                  onClick={handleExitEarly}
+                  disabled={!backendStatus.available_controls.exit_early}
+                  className="bg-green-500 hover:bg-green-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
+                >
+                  <SkipForward className="w-5 h-5 mr-2" />
+                  End Episode
+                </Button>
+
+                <Button
+                  onClick={handleRerecordEpisode}
+                  disabled={!backendStatus.available_controls.rerecord_episode}
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
+                >
+                  <RotateCcw className="w-5 h-5 mr-2" />
+                  Re-record Episode
+                </Button>
+
+                <Button
+                  onClick={handleStopRecording}
+                  disabled={!backendStatus.available_controls.stop_recording}
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
+                >
+                  <Square className="w-5 h-5 mr-2" />
+                  Stop Recording
+                </Button>
+              </div>
+            )}
+
+            {/* Reset Phase Controls */}
+            {currentPhase === "resetting" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Button
+                  onClick={handleExitEarly}
+                  disabled={!backendStatus.available_controls.exit_early}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 text-xl disabled:opacity-50"
+                >
+                  <Play className="w-6 h-6 mr-2" />
+                  Continue to Next Phase
+                </Button>
+
+                <Button
+                  onClick={handleStopRecording}
+                  disabled={!backendStatus.available_controls.stop_recording}
+                  className="bg-red-500 hover:bg-red-600 text-white font-semibold py-6 text-xl disabled:opacity-50"
+                >
+                  <Square className="w-5 h-5 mr-2" />
+                  Stop Recording
+                </Button>
+              </div>
+            )}
+
+            {currentPhase === "completed" && (
+              <div className="text-center">
+                <p className="text-lg text-green-400 mb-6">
+                  ✅ Recording session completed successfully!
+                </p>
+                <p className="text-gray-400 mb-6">
+                  Dataset:{" "}
+                  <span className="text-white font-semibold">
+                    {recordingConfig.dataset_repo_id}
+                  </span>
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    onClick={() => navigate("/training")}
+                    className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 text-lg"
+                  >
+                    <GraduationCap className="w-5 h-5 mr-2" />
+                    Start Training
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/")}
+                    variant="outline"
+                    className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-3 px-6 text-lg"
+                  >
+                    Return to Home
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Instructions */}
+            <div className="mt-6 p-4 bg-gray-800 rounded-lg">
+              <h3 className="font-semibold mb-2">
+                {currentPhase === "recording"
+                  ? "Episode Recording Instructions:"
+                  : currentPhase === "resetting"
+                  ? "Environment Reset Instructions:"
+                  : "Session Instructions:"}
+              </h3>
+              {currentPhase === "recording" && (
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>
+                    • <strong>End Episode:</strong> Complete current episode and
+                    enter reset phase (Right Arrow)
+                  </li>
+                  <li>
+                    • <strong>Re-record Episode:</strong> Restart current episode
+                    after reset phase (Left Arrow)
+                  </li>
+                  <li>
+                    • <strong>Auto-end:</strong> Episode ends automatically after{" "}
+                    {formatTime(phaseTimeLimit)}
+                  </li>
+                  <li>
+                    • <strong>Stop Recording:</strong> End entire session (ESC
+                    key)
+                  </li>
+                </ul>
+              )}
+              {currentPhase === "resetting" && (
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>
+                    • <strong>Continue to Next Phase:</strong> Skip reset phase
+                    and continue (Right Arrow)
+                  </li>
+                  <li>
+                    • <strong>Auto-continue:</strong> Automatically continues
+                    after {formatTime(phaseTimeLimit)}
+                  </li>
+                  <li>
+                    • <strong>Reset Phase:</strong> Use this time to prepare your
+                    environment for the next episode
+                  </li>
+                  <li>
+                    • <strong>Stop Recording:</strong> End entire session (ESC
+                    key)
+                  </li>
+                </ul>
+              )}
             </div>
           </div>
 
-          {/* Recording Phase Controls */}
-          {currentPhase === "recording" && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Button
-                onClick={handleExitEarly}
-                disabled={!backendStatus.available_controls.exit_early}
-                className="bg-green-500 hover:bg-green-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
-              >
-                <SkipForward className="w-5 h-5 mr-2" />
-                End Episode
-              </Button>
-
-              <Button
-                onClick={handleRerecordEpisode}
-                disabled={!backendStatus.available_controls.rerecord_episode}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
-              >
-                <RotateCcw className="w-5 h-5 mr-2" />
-                Re-record Episode
-              </Button>
-
-              <Button
-                onClick={handleStopRecording}
-                disabled={!backendStatus.available_controls.stop_recording}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-4 text-lg disabled:opacity-50"
-              >
-                <Square className="w-5 h-5 mr-2" />
-                Stop Recording
-              </Button>
+          {/* Phone Camera Feed - takes up 1 column */}
+          {phoneCameraConnected && (
+            <div className="bg-gray-900 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-sm font-semibold text-gray-400 mb-3">Phone Camera</h3>
+              <PhoneCameraFeed sessionId={sessionId} />
             </div>
           )}
+        </div>
 
-          {/* Reset Phase Controls */}
-          {currentPhase === "resetting" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Button
-                onClick={handleExitEarly}
-                disabled={!backendStatus.available_controls.exit_early}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-6 text-xl disabled:opacity-50"
-              >
-                <Play className="w-6 h-6 mr-2" />
-                Continue to Next Phase
-              </Button>
-
-              <Button
-                onClick={handleStopRecording}
-                disabled={!backendStatus.available_controls.stop_recording}
-                className="bg-red-500 hover:bg-red-600 text-white font-semibold py-6 text-xl disabled:opacity-50"
-              >
-                <Square className="w-5 h-5 mr-2" />
-                Stop Recording
-              </Button>
-            </div>
-          )}
-
-          {currentPhase === "completed" && (
-            <div className="text-center">
-              <p className="text-lg text-green-400 mb-6">
-                ✅ Recording session completed successfully!
-              </p>
-              <p className="text-gray-400 mb-6">
-                Dataset:{" "}
-                <span className="text-white font-semibold">
-                  {recordingConfig.dataset_repo_id}
-                </span>
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={() => navigate("/training")}
-                  className="bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 text-lg"
-                >
-                  <GraduationCap className="w-5 h-5 mr-2" />
-                  Start Training
-                </Button>
-                <Button
-                  onClick={() => navigate("/")}
-                  variant="outline"
-                  className="bg-transparent border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-white py-3 px-6 text-lg"
-                >
-                  Return to Home
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {/* Instructions */}
-          <div className="mt-6 p-4 bg-gray-800 rounded-lg">
-            <h3 className="font-semibold mb-2">
-              {currentPhase === "recording"
-                ? "Episode Recording Instructions:"
-                : currentPhase === "resetting"
-                ? "Environment Reset Instructions:"
-                : "Session Instructions:"}
-            </h3>
-            {currentPhase === "recording" && (
-              <ul className="text-sm text-gray-400 space-y-1">
-                <li>
-                  • <strong>End Episode:</strong> Complete current episode and
-                  enter reset phase (Right Arrow)
-                </li>
-                <li>
-                  • <strong>Re-record Episode:</strong> Restart current episode
-                  after reset phase (Left Arrow)
-                </li>
-                <li>
-                  • <strong>Auto-end:</strong> Episode ends automatically after{" "}
-                  {formatTime(phaseTimeLimit)}
-                </li>
-                <li>
-                  • <strong>Stop Recording:</strong> End entire session (ESC
-                  key)
-                </li>
-              </ul>
-            )}
-            {currentPhase === "resetting" && (
-              <ul className="text-sm text-gray-400 space-y-1">
-                <li>
-                  • <strong>Continue to Next Phase:</strong> Skip reset phase
-                  and continue (Right Arrow)
-                </li>
-                <li>
-                  • <strong>Auto-continue:</strong> Automatically continues
-                  after {formatTime(phaseTimeLimit)}
-                </li>
-                <li>
-                  • <strong>Reset Phase:</strong> Use this time to prepare your
-                  environment for the next episode
-                </li>
-                <li>
-                  • <strong>Stop Recording:</strong> End entire session (ESC
-                  key)
-                </li>
-              </ul>
-            )}
+        {/* URDF Viewer Section */}
+        <div className="bg-gray-900 rounded-lg p-6 border border-gray-700 mb-8">
+          <h2 className="text-xl font-semibold text-white mb-4">Robot Visualizer</h2>
+          <div className="h-96 bg-gray-800 rounded-lg overflow-hidden">
+            <UrdfViewer />
+            <UrdfProcessorInitializer />
           </div>
         </div>
       </div>
+
+      {/* QR Code Modal */}
+      <QrCodeModal
+        open={showQrModal}
+        onOpenChange={setShowQrModal}
+        sessionId={sessionId}
+      />
     </div>
   );
 };
