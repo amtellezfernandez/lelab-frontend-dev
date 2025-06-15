@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), mode === "development" && componentTagger()].filter(
     Boolean
   ),
+  preview: {
+    allowedHosts: ["jurmy24-lelab.hf.space"],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
