@@ -25,7 +25,7 @@ const ActionList: React.FC<ActionListProps> = ({ actions, robotModel }) => {
           LeKiwi model is not yet supported. Please select another model to continue.
         </p>
       )}
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {actions.map((action, index) => (
           <div
             key={index}
