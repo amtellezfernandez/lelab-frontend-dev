@@ -1,19 +1,15 @@
-
 import React from 'react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
 interface RobotModelSelectorProps {
   robotModel: string;
   onValueChange: (model: string) => void;
 }
-
 const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
   robotModel,
   onValueChange
 }) => {
-  return (
-    <div className="flex items-center justify-center gap-6">
+  return <div className="flex items-center justify-center gap-6">
       <h2 className="font-semibold text-white text-xl whitespace-nowrap">
         Select Robot Model
       </h2>
@@ -38,7 +34,7 @@ const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
         </div>
         <div>
           <RadioGroupItem value="LeKiwi" id="lekiwi" className="sr-only" disabled />
-          <Label htmlFor="lekiwi" className="flex items-center gap-2 px-3 py-2 rounded-full bg-gray-800 border border-gray-700 cursor-not-allowed opacity-50 transition-all min-w-[80px] justify-center">
+          <Label htmlFor="lekiwi" className="flex items-center gap-2 rounded-full bg-gray-800 border border-gray-700 cursor-not-allowed opacity-50 transition-all min-w-[80px] justify-center px-[20px] py-[6px]">
             <span className="w-4 h-4 rounded-full border-2 border-gray-500 flex items-center justify-center">
               {robotModel === "LeKiwi" && <span className="w-2 h-2 rounded-full bg-orange-500" />}
             </span>
@@ -49,8 +45,6 @@ const RobotModelSelector: React.FC<RobotModelSelectorProps> = ({
           </Label>
         </div>
       </RadioGroup>
-    </div>
-  );
+    </div>;
 };
-
 export default RobotModelSelector;
