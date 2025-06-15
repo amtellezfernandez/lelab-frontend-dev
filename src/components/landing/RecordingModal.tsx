@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,21 +130,10 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-[600px] p-8 max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex justify-center items-center gap-4 flex-1">
-                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">REC</span>
-                </div>
+            <div className="flex justify-center items-center mb-4">
+              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-sm">REC</span>
               </div>
-              <Button
-                onClick={handleQrCodeClick}
-                variant="outline"
-                size="icon"
-                className="border-gray-600 hover:border-blue-500 text-gray-300 hover:text-blue-400"
-                title="Add Phone Camera"
-              >
-                <QrCode className="w-5 h-5" />
-              </Button>
             </div>
             <DialogTitle className="text-white text-center text-2xl font-bold">
               Configure Recording
@@ -154,6 +144,23 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
               Configure the robot arm settings and dataset parameters for
               recording.
             </DialogDescription>
+
+            <div className="border-y border-gray-700 py-6 flex flex-col items-center gap-4 bg-gray-800/50 rounded-lg">
+              <h3 className="text-lg font-semibold text-white">
+                Need an extra angle?
+              </h3>
+              <p className="text-sm text-gray-400 -mt-2">
+                Add your phone as a secondary camera.
+              </p>
+              <Button
+                onClick={handleQrCodeClick}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg flex items-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transform hover:scale-105"
+                title="Add Phone Camera"
+              >
+                <QrCode className="w-5 h-5" />
+                <span>Add Phone Camera</span>
+              </Button>
+            </div>
 
             <div className="grid grid-cols-1 gap-6">
               <div className="space-y-4">
