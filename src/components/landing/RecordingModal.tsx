@@ -125,7 +125,7 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
               <p className="text-sm text-gray-400 -mt-2">
                 Add your phone as a secondary camera.
               </p>
-              <Button onClick={handleQrCodeClick} title="Add Phone Camera" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 flex items-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transform hover:scale-105 rounded-2xl">
+              <Button onClick={handleQrCodeClick} title="Add Phone Camera" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 flex items-center gap-2 transition-all duration-300 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 transform hover:scale-105 rounded-lg">
                 <QrCode className="w-5 h-5" />
                 <span>Add Phone Camera</span>
               </Button>
