@@ -72,6 +72,12 @@ const Landing = () => {
     }
   };
 
+  const handleCalibrationClick = () => {
+    if (robotModel) {
+      navigate("/calibration");
+    }
+  };
+
   const handleRecordingClick = () => {
     if (robotModel) {
       setShowRecordingModal(true);
@@ -229,6 +235,12 @@ const Landing = () => {
       description: "Control the robot arm in real-time.",
       handler: handleTeleoperationClick,
       color: "bg-yellow-500 hover:bg-yellow-600",
+    },
+    {
+      title: "Calibration",
+      description: "Calibrate robot arm positions.",
+      handler: handleCalibrationClick,
+      color: "bg-indigo-500 hover:bg-indigo-600",
     },
     {
       title: "Record Dataset",
