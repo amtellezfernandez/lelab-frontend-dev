@@ -298,34 +298,29 @@ const Landing = () => {
           </div>
         </RadioGroup>
         <div className="pt-6">
-          {!robotModel ? (
-            <p className="text-center text-gray-400">
-              Please select a robot model to continue.
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {actions.map((action, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700"
-                >
-                  <div>
-                    <h3 className="font-semibold text-lg">{action.title}</h3>
-                    <p className="text-gray-400 text-sm">
-                      {action.description}
-                    </p>
-                  </div>
-                  <Button
-                    onClick={action.handler}
-                    size="icon"
-                    className={`${action.color} text-white`}
-                  >
-                    <ArrowRight className="w-5 h-5" />
-                  </Button>
+          <div className="space-y-4">
+            {actions.map((action, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700"
+              >
+                <div>
+                  <h3 className="font-semibold text-lg">{action.title}</h3>
+                  <p className="text-gray-400 text-sm">
+                    {action.description}
+                  </p>
                 </div>
-              ))}
-            </div>
-          )}
+                <Button
+                  onClick={action.handler}
+                  size="icon"
+                  className={`${action.color} text-white`}
+                  disabled={!robotModel}
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
