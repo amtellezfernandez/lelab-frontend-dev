@@ -258,7 +258,7 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center p-4 pt-12 sm:pt-20">
       <LandingHeader />
 
       <div className="mt-12 p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-lg space-y-6 border border-gray-700">

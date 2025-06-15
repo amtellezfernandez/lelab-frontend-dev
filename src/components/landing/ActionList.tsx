@@ -10,6 +10,9 @@ interface ActionListProps {
 }
 
 const ActionList: React.FC<ActionListProps> = ({ actions, robotModel }) => {
+  const isLeKiwi = robotModel === "LeKiwi";
+  const isDisabled = !robotModel || isLeKiwi;
+
   return (
     <div className="pt-6">
       {!robotModel && (
@@ -17,12 +20,17 @@ const ActionList: React.FC<ActionListProps> = ({ actions, robotModel }) => {
           Please select a robot model to continue.
         </p>
       )}
+      {isLeKiwi && (
+        <p className="text-center text-yellow-500 mb-4">
+          LeKiwi model is not yet supported. Please select another model to continue.
+        </p>
+      )}
       <div className="space-y-4">
         {actions.map((action, index) => (
           <div
             key={index}
             className={`flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 transition-opacity ${
-              !robotModel ? "opacity-50" : ""
+              isDisabled ? "opacity-50" : ""
             }`}
           >
             <div>
@@ -35,7 +43,7 @@ const ActionList: React.FC<ActionListProps> = ({ actions, robotModel }) => {
               onClick={action.handler}
               size="icon"
               className={`${action.color} text-white`}
-              disabled={!robotModel}
+              disabled={isDisabled}
             >
               <ArrowRight className="w-5 h-5" />
             </Button>
