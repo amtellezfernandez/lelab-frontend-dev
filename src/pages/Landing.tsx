@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -85,12 +84,6 @@ const Landing = () => {
     if (robotModel) {
       setShowRecordingModal(true);
       loadConfigs();
-    }
-  };
-
-  const handleEditDatasetClick = () => {
-    if (robotModel) {
-      navigate("/edit-dataset");
     }
   };
 
@@ -228,12 +221,6 @@ const Landing = () => {
 
   const actions: Action[] = [
     {
-      title: "Begin Session",
-      description: "Start a new control session.",
-      handler: handleBeginSession,
-      color: "bg-orange-500 hover:bg-orange-600",
-    },
-    {
       title: "Teleoperation",
       description: "Control the robot arm in real-time.",
       handler: handleTeleoperationClick,
@@ -244,6 +231,7 @@ const Landing = () => {
       description: "Calibrate robot arm positions.",
       handler: handleCalibrationClick,
       color: "bg-indigo-500 hover:bg-indigo-600",
+      isWorkInProgress: true,
     },
     {
       title: "Record Dataset",
@@ -252,22 +240,18 @@ const Landing = () => {
       color: "bg-red-500 hover:bg-red-600",
     },
     {
-      title: "Edit Dataset",
-      description: "Review and modify recorded datasets.",
-      handler: handleEditDatasetClick,
-      color: "bg-blue-500 hover:bg-blue-600",
-    },
-    {
       title: "Training",
       description: "Train a model on your datasets.",
       handler: handleTrainingClick,
       color: "bg-green-500 hover:bg-green-600",
+      isWorkInProgress: true,
     },
     {
       title: "Replay Dataset",
       description: "Replay and analyze recorded datasets.",
       handler: handleReplayDatasetClick,
       color: "bg-purple-500 hover:bg-purple-600",
+      isWorkInProgress: true,
     },
   ];
 
@@ -277,7 +261,7 @@ const Landing = () => {
         <LandingHeader onShowInstructions={() => setShowUsageModal(true)} />
       </div>
 
-      <div className="p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-lg space-y-6 border border-gray-700">
+      <div className="p-8 bg-gray-900 rounded-lg shadow-xl w-full max-w-4xl space-y-6 border border-gray-700">
         <RobotModelSelector
           robotModel={robotModel}
           onValueChange={setRobotModel}
