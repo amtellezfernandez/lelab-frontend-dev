@@ -13,6 +13,7 @@ import Calibration from "./pages/Calibration";
 import Training from "./pages/Training";
 import { UrdfProvider } from "./contexts/UrdfContext";
 import EditDataset from "./pages/EditDataset";
+import ReplayDataset from "./pages/ReplayDataset";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/calibration" element={<Calibration />} />
             <Route path="/training" element={<Training />} />
             <Route path="/edit-dataset" element={<EditDataset />} />
+            <Route path="/replay-dataset" element={<ReplayDataset />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

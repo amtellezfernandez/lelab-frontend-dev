@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -94,7 +93,7 @@ const Landing = () => {
 
   const handleReplayDatasetClick = () => {
     if (robotModel) {
-      navigate("/edit-dataset");
+      navigate("/replay-dataset");
     }
   };
 
