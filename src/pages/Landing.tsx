@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +13,7 @@ import { Action } from "@/components/landing/types";
 import UsageInstructionsModal from "@/components/landing/UsageInstructionsModal";
 
 const Landing = () => {
-  const [robotModel, setRobotModel] = useState("");
+  const [robotModel, setRobotModel] = useState("SO101");
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [showTeleoperationModal, setShowTeleoperationModal] = useState(false);
   const [showUsageModal, setShowUsageModal] = useState(false);
