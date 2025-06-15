@@ -96,6 +96,18 @@ const Landing = () => {
     }
   };
 
+  const handleTrainingClick = () => {
+    if (robotModel) {
+      navigate("/training");
+    }
+  };
+
+  const handleReplayDatasetClick = () => {
+    if (robotModel) {
+      navigate("/edit-dataset");
+    }
+  };
+
   const handleStartTeleoperation = async () => {
     if (!leaderConfig || !followerConfig) {
       toast({
@@ -242,6 +254,18 @@ const Landing = () => {
       handler: handleEditDatasetClick,
       color: "bg-blue-500 hover:bg-blue-600",
     },
+    {
+      title: "Training",
+      description: "Train a model on your datasets.",
+      handler: handleTrainingClick,
+      color: "bg-green-500 hover:bg-green-600",
+    },
+    {
+      title: "Replay Dataset",
+      description: "Replay and analyze recorded datasets.",
+      handler: handleReplayDatasetClick,
+      color: "bg-purple-500 hover:bg-purple-600",
+    },
   ];
 
   return (
@@ -298,11 +322,18 @@ const Landing = () => {
           </div>
         </RadioGroup>
         <div className="pt-6">
+          {!robotModel && (
+            <p className="text-center text-gray-400 mb-4">
+              Please select a robot model to continue.
+            </p>
+          )}
           <div className="space-y-4">
             {actions.map((action, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700"
+                className={`flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-gray-700 transition-opacity ${
+                  !robotModel ? "opacity-50" : ""
+                }`}
               >
                 <div>
                   <h3 className="font-semibold text-lg">{action.title}</h3>
