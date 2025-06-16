@@ -21,7 +21,7 @@ import { Settings } from "lucide-react";
 import PortDetectionModal from "@/components/ui/PortDetectionModal";
 import PortDetectionButton from "@/components/ui/PortDetectionButton";
 import { useApi } from "@/contexts/ApiContext";
-import { usePortAutoSave } from "@/hooks/usePortAutoSave";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 interface DirectFollowerModalProps {
   open: boolean;
@@ -47,13 +47,14 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
   onStart,
 }) => {
   const { baseUrl, fetchWithHeaders } = useApi();
-  const { debouncedSavePort } = usePortAutoSave();
+  const { debouncedSavePort, debouncedSaveConfig } = useAutoSave();
   const [showPortDetection, setShowPortDetection] = useState(false);
 
-  // Load saved follower port on component mount
+  // Load saved follower port and configuration on component mount
   useEffect(() => {
-    const loadSavedPort = async () => {
+    const loadSavedData = async () => {
       try {
+        // Load follower port
         const followerResponse = await fetchWithHeaders(
           `${baseUrl}/robot-port/follower`
         );
@@ -61,15 +62,24 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
         if (followerData.status === "success" && followerData.default_port) {
           setFollowerPort(followerData.default_port);
         }
+
+        // Load follower configuration
+        const followerConfigResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-config/follower?available_configs=${followerConfigs.join(',')}`
+        );
+        const followerConfigData = await followerConfigResponse.json();
+        if (followerConfigData.status === "success" && followerConfigData.default_config) {
+          setFollowerConfig(followerConfigData.default_config);
+        }
       } catch (error) {
-        console.error("Error loading saved follower port:", error);
+        console.error("Error loading saved data:", error);
       }
     };
 
-    if (open) {
-      loadSavedPort();
+    if (open && followerConfigs.length > 0) {
+      loadSavedData();
     }
-  }, [open, setFollowerPort, baseUrl, fetchWithHeaders]);
+  }, [open, setFollowerPort, setFollowerConfig, followerConfigs, baseUrl, fetchWithHeaders]);
 
   const handlePortDetection = () => {
     setShowPortDetection(true);
@@ -84,6 +94,13 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
     setFollowerPort(value);
     // Auto-save with debouncing to avoid excessive API calls
     debouncedSavePort("follower", value);
+  };
+
+  // Enhanced config change handler that saves automatically
+  const handleFollowerConfigChange = (value: string) => {
+    setFollowerConfig(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSaveConfig("follower", value);
   };
 
   return (
@@ -132,7 +149,7 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
               >
                 Follower Calibration Config
               </Label>
-              <Select value={followerConfig} onValueChange={setFollowerConfig}>
+              <Select value={followerConfig} onValueChange={handleFollowerConfigChange}>
                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                   <SelectValue
                     placeholder={
