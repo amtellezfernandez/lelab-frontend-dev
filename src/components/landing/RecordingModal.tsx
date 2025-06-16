@@ -21,6 +21,7 @@ import PortDetectionModal from "@/components/ui/PortDetectionModal";
 import PortDetectionButton from "@/components/ui/PortDetectionButton";
 import QrCodeModal from "@/components/recording/QrCodeModal";
 import { useApi } from "@/contexts/ApiContext";
+import { usePortAutoSave } from "@/hooks/usePortAutoSave";
 interface RecordingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -66,6 +67,7 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
   onStart,
 }) => {
   const { baseUrl, fetchWithHeaders } = useApi();
+  const { debouncedSavePort } = usePortAutoSave();
   const [showPortDetection, setShowPortDetection] = useState(false);
   const [detectionRobotType, setDetectionRobotType] = useState<
     "leader" | "follower"
@@ -112,6 +114,19 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
     } else {
       setFollowerPort(port);
     }
+  };
+
+  // Enhanced port change handlers that save automatically
+  const handleLeaderPortChange = (value: string) => {
+    setLeaderPort(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSavePort("leader", value);
+  };
+
+  const handleFollowerPortChange = (value: string) => {
+    setFollowerPort(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSavePort("follower", value);
   };
   const handleQrCodeClick = () => {
     // Generate a session ID for this recording session
@@ -175,7 +190,7 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
                       <Input
                         id="recordLeaderPort"
                         value={leaderPort}
-                        onChange={(e) => setLeaderPort(e.target.value)}
+                        onChange={(e) => handleLeaderPortChange(e.target.value)}
                         placeholder="/dev/tty.usbmodem5A460816421"
                         className="bg-gray-800 border-gray-700 text-white flex-1"
                       />
@@ -229,7 +244,7 @@ const RecordingModal: React.FC<RecordingModalProps> = ({
                       <Input
                         id="recordFollowerPort"
                         value={followerPort}
-                        onChange={(e) => setFollowerPort(e.target.value)}
+                        onChange={(e) => handleFollowerPortChange(e.target.value)}
                         placeholder="/dev/tty.usbmodem5A460816621"
                         className="bg-gray-800 border-gray-700 text-white flex-1"
                       />

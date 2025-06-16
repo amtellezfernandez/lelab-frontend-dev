@@ -20,6 +20,8 @@ import {
 import { Settings } from "lucide-react";
 import PortDetectionModal from "@/components/ui/PortDetectionModal";
 import PortDetectionButton from "@/components/ui/PortDetectionButton";
+import { useApi } from "@/contexts/ApiContext";
+import { usePortAutoSave } from "@/hooks/usePortAutoSave";
 
 interface DirectFollowerModalProps {
   open: boolean;
@@ -44,14 +46,16 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
   isLoadingConfigs,
   onStart,
 }) => {
+  const { baseUrl, fetchWithHeaders } = useApi();
+  const { debouncedSavePort } = usePortAutoSave();
   const [showPortDetection, setShowPortDetection] = useState(false);
 
   // Load saved follower port on component mount
   useEffect(() => {
     const loadSavedPort = async () => {
       try {
-        const followerResponse = await fetch(
-          "http://localhost:8000/robot-port/follower"
+        const followerResponse = await fetchWithHeaders(
+          `${baseUrl}/robot-port/follower`
         );
         const followerData = await followerResponse.json();
         if (followerData.status === "success" && followerData.default_port) {
@@ -65,7 +69,7 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
     if (open) {
       loadSavedPort();
     }
-  }, [open, setFollowerPort]);
+  }, [open, setFollowerPort, baseUrl, fetchWithHeaders]);
 
   const handlePortDetection = () => {
     setShowPortDetection(true);
@@ -73,6 +77,13 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
 
   const handlePortDetected = (port: string) => {
     setFollowerPort(port);
+  };
+
+  // Enhanced port change handler that saves automatically
+  const handleFollowerPortChange = (value: string) => {
+    setFollowerPort(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSavePort("follower", value);
   };
 
   return (
@@ -103,7 +114,7 @@ const DirectFollowerModal: React.FC<DirectFollowerModalProps> = ({
                 <Input
                   id="followerPort"
                   value={followerPort}
-                  onChange={(e) => setFollowerPort(e.target.value)}
+                  onChange={(e) => handleFollowerPortChange(e.target.value)}
                   placeholder="/dev/tty.usbmodem5A460816621"
                   className="bg-gray-800 border-gray-700 text-white flex-1"
                 />

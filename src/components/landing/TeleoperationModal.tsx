@@ -20,6 +20,7 @@ import { Settings } from "lucide-react";
 import PortDetectionModal from "@/components/ui/PortDetectionModal";
 import PortDetectionButton from "@/components/ui/PortDetectionButton";
 import { useApi } from "@/contexts/ApiContext";
+import { usePortAutoSave } from "@/hooks/usePortAutoSave";
 
 interface TeleoperationModalProps {
   open: boolean;
@@ -55,6 +56,7 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
   onStart,
 }) => {
   const { baseUrl, fetchWithHeaders } = useApi();
+  const { debouncedSavePort } = usePortAutoSave();
   const [showPortDetection, setShowPortDetection] = useState(false);
   const [detectionRobotType, setDetectionRobotType] = useState<
     "leader" | "follower"
@@ -103,6 +105,19 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
       setFollowerPort(port);
     }
   };
+
+  // Enhanced port change handlers that save automatically
+  const handleLeaderPortChange = (value: string) => {
+    setLeaderPort(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSavePort("leader", value);
+  };
+
+  const handleFollowerPortChange = (value: string) => {
+    setFollowerPort(value);
+    // Auto-save with debouncing to avoid excessive API calls
+    debouncedSavePort("follower", value);
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-gray-900 border-gray-800 text-white sm:max-w-[600px] p-8">
@@ -132,7 +147,7 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
                 <Input
                   id="leaderPort"
                   value={leaderPort}
-                  onChange={(e) => setLeaderPort(e.target.value)}
+                  onChange={(e) => handleLeaderPortChange(e.target.value)}
                   placeholder="/dev/tty.usbmodem5A460816421"
                   className="bg-gray-800 border-gray-700 text-white flex-1"
                 />
@@ -185,7 +200,7 @@ const TeleoperationModal: React.FC<TeleoperationModalProps> = ({
                 <Input
                   id="followerPort"
                   value={followerPort}
-                  onChange={(e) => setFollowerPort(e.target.value)}
+                  onChange={(e) => handleFollowerPortChange(e.target.value)}
                   placeholder="/dev/tty.usbmodem5A460816621"
                   className="bg-gray-800 border-gray-700 text-white flex-1"
                 />
